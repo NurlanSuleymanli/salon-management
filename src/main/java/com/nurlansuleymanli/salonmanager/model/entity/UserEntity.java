@@ -1,16 +1,20 @@
 package com.nurlansuleymanli.salonmanager.model.entity;
 
 
-import com.nurlansuleymanli.salonmanager.model.entity.enums.Role;
+import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 
 
 
-
+@Getter
+@Setter
+@ToString(exclude = "passwordHash")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "users",schema = "public",
         uniqueConstraints = {
@@ -26,6 +30,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
 
@@ -43,11 +48,12 @@ public class UserEntity {
     @NotBlank
     @Size(max = 32)
     @Column(name = "phone", nullable = false, length = 32)
+    @Pattern(regexp = "994xxxxxxxxx")
     private String phone;
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "password_hash", nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @NotNull
@@ -74,7 +80,6 @@ public class UserEntity {
         this.phone = phone;
         this.passwordHash = passwordHash;
         this.role = role;
-        this.isActive = true;
     }
 
     @PrePersist
