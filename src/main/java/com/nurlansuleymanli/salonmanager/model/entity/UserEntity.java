@@ -48,7 +48,7 @@ public class UserEntity {
     @NotBlank
     @Size(max = 32)
     @Column(name = "phone", nullable = false, length = 32)
-    @Pattern(regexp = "994xxxxxxxxx")
+    @Pattern(regexp = "^\\+994(10|50|51|55|70|77|99)\\d{7}$")
     private String phone;
 
     @NotBlank
