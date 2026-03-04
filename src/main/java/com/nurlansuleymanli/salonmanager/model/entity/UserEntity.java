@@ -5,6 +5,7 @@ import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.time.Instant;
 @Setter
 @ToString(exclude = "passwordHash")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "users",schema = "public",
         uniqueConstraints = {
@@ -26,6 +28,26 @@ import java.time.Instant;
                 @Index(name = "idx_users_phone", columnList = "phone")
         }
 )
+
+//Lazım olacaq klasslar (Java tərəfi üçün)
+//
+//Entity (JPA) klassları
+//	•	User { id, fullName, email, phone, passwordHash, role, isActive, createdAt, updatedAt }
+//	•	Salon { id, name, address, contactPhone, contactEmail, isActive, createdAt, updatedAt }
+//	•	SalonWorkingHour { id, salonId, dayOfWeek, startTime, endTime, isClosed, createdAt, updatedAt }
+//	•	Barber { id, userId, salonId, displayName, isActive, createdAt, updatedAt }
+//	•	Service { id, salonId, name, durationMin, price, isActive, createdAt, updatedAt }
+//	•	BarberService { barberId, serviceId, isActive, createdAt, updatedAt } (composite key)
+//	•	BarberWorkingHour { id, barberId, dayOfWeek, startTime, endTime, breakStartTime, breakEndTime, createdAt, updatedAt }
+//	•	Reservation { id, salonId, customerId, barberId, serviceId, startAt, endAt, status, cancelledAt, cancelReason, createdAt, updatedAt }
+//	•	(opsional) ReservationStatusHistory { ... }
+//	•	(opsional) RefreshToken { ... }
+//
+//Enum-lar
+//	•	Role { CUSTOMER, BARBER, ADMIN }  ￼
+//	•	ReservationStatus { PENDING, CONFIRMED, CANCELLED, NO_SHOW, COMPLETED }  ￼
+
+
 public class UserEntity {
 
     @Id
