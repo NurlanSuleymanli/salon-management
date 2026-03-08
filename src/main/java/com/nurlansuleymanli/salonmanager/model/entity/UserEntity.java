@@ -29,24 +29,6 @@ import java.time.Instant;
         }
 )
 
-//Lazım olacaq klasslar (Java tərəfi üçün)
-//
-//Entity (JPA) klassları
-//	•	User { id, fullName, email, phone, passwordHash, role, isActive, createdAt, updatedAt }
-//	•	Salon { id, name, address, contactPhone, contactEmail, isActive, createdAt, updatedAt }
-//	•	SalonWorkingHour { id, salonId, dayOfWeek, startTime, endTime, isClosed, createdAt, updatedAt }
-//	•	Barber { id, userId, salonId, displayName, isActive, createdAt, updatedAt }
-//	•	Service { id, salonId, name, durationMin, price, isActive, createdAt, updatedAt }
-//	•	BarberService { barberId, serviceId, isActive, createdAt, updatedAt } (composite key)
-//	•	BarberWorkingHour { id, barberId, dayOfWeek, startTime, endTime, breakStartTime, breakEndTime, createdAt, updatedAt }
-//	•	Reservation { id, salonId, customerId, barberId, serviceId, startAt, endAt, status, cancelledAt, cancelReason, createdAt, updatedAt }
-//	•	(opsional) ReservationStatusHistory { ... }
-//	•	(opsional) RefreshToken { ... }
-//
-//Enum-lar
-//	•	Role { CUSTOMER, BARBER, ADMIN }  ￼
-//	•	ReservationStatus { PENDING, CONFIRMED, CANCELLED, NO_SHOW, COMPLETED }  ￼
-
 
 public class UserEntity {
 
