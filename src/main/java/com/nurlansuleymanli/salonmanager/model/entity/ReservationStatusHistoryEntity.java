@@ -10,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "reservation_status_history")
+@Table(name = "reservation_status_history", schema = "public")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationStatusHistoryEntity {
 

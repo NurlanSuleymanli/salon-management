@@ -12,7 +12,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "reservations",
+@Table(name = "reservations", schema = "public",
         indexes = {
                 @Index(name = "idx_resv_barber_start_end", columnList = "barber_id, start_at, end_at")
         })

@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "salon_working_hours",
+@Table(name = "salon_working_hours", schema = "public",
         uniqueConstraints = @UniqueConstraint(columnNames = {"salon_id", "day_of_week"}))
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SalonWorkingHourEntity {

@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "barber_working_hours",
+@Table(name = "barber_working_hours", schema = "public",
         uniqueConstraints = @UniqueConstraint(columnNames = {"barber_id", "day_of_week"}))
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BarberWorkingHourEntity {

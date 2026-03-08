@@ -8,17 +8,22 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "services")
+@Table(name = "services", schema = "public")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @ManyToMany(mappedBy = "services", fetch = FetchType.LAZY)
+    private List<BarberEntity> barbers = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "salon_id", nullable = false)
