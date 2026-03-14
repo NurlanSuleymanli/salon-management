@@ -14,6 +14,8 @@ import java.time.Instant;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor
 @ToString(exclude = "passwordHash")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,8 +30,7 @@ import java.time.Instant;
                 @Index(name = "idx_users_phone", columnList = "phone")
         }
 )
-
-
+@Builder
 public class UserEntity {
 
     @Id
@@ -75,8 +76,6 @@ public class UserEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
-    protected UserEntity() {}
 
     public UserEntity(String fullName, String email, String phone, String passwordHash, Role role) {
         this.fullName = fullName;
