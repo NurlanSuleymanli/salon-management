@@ -93,6 +93,4 @@ public class UserEntity {
         return value == null ? null : value.trim().toLowerCase();
     }
 
-
-
 }

@@ -1,8 +1,9 @@
 package com.nurlansuleymanli.salonmanager.controller;
 
 
-import com.nurlansuleymanli.salonmanager.model.dto.request.RegisterUserRequest;
+import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
 import com.nurlansuleymanli.salonmanager.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,11 +21,15 @@ public class AuthController {
 
      AuthService authService;
 
-
-        @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterUserRequest request){
+     @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequest request){
         return authService.registerUser(request);
     }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<?> loginUser(@RequestBody @Valid UserRequest request){
+//         return authService.loginUser(request);
+//    }
 
 
 

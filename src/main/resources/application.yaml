@@ -15,10 +15,10 @@ spring:
     username: postgres
     password: postgres
 
-  security:
-    user:
-      name: admin
-      password: admin123
+#  security:
+#    user:
+#      name: admin
+#      password: admin123
 
 
 

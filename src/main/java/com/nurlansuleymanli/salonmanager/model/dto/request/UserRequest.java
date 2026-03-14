@@ -1,18 +1,17 @@
 package com.nurlansuleymanli.salonmanager.model.dto.request;
 
 
-import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class RegisterUserRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserRequest {
     @NotBlank
     @Size(max = 120)
     String fullName;
@@ -31,6 +30,4 @@ public class RegisterUserRequest {
     @Size(max = 255)
     String password;
 
-    @NotBlank
-    Role role;
 }
