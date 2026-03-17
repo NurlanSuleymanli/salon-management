@@ -3,9 +3,10 @@ package com.nurlansuleymanli.salonmanager.service;
 import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
+import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
-import com.nurlansuleymanli.salonmanager.model.dto.response.RegisterUserResponse;
+import com.nurlansuleymanli.salonmanager.model.dto.response.UserResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -14,8 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 
 @Service
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
      UserRepository userRepository;
-//     PasswordEncoder passwordEncoder;
+     PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> registerUser(@Valid UserRequest request) {
 
@@ -35,20 +37,20 @@ public class AuthService {
             throw new PhoneNumberAlreadyExistException("Phone number is taken!");
         }
 
-//        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         UserEntity user = UserEntity.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
-                .passwordHash(request.getPassword())
+                .passwordHash(encodedPassword)
                 .role(Role.CUSTOMER)
                 .isActive(true)
                 .build();
 
         userRepository.save(user);
 
-        RegisterUserResponse response = RegisterUserResponse.builder()
+        UserResponse response = UserResponse.builder()
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
@@ -59,17 +61,30 @@ public class AuthService {
 
     }
 
-//
-//    public ResponseEntity<?> loginUser(@Valid UserRequest request){
-//        if (userRepository.findByEmail(request.getEmail()).isEmpty()){
-//            throw new UserNotFoundException("User not found!");
-//        }
-//        if (userRepository.findByPhone(request.getPhone()).isEmpty()){
-//            throw new UserNotFoundException("User not found!");
-//        }
-//
-//
-//
-//    }
+
+    public ResponseEntity<?> loginUser(@Valid UserRequest request){
+
+
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()){
+            throw new UserNotFoundException("User not found!");
+        }
+        if (userRepository.findByPhone(request.getPhone()).isEmpty()){
+            throw new UserNotFoundException("User not found!");
+        }
+
+        if(!(userRepository.findByPhoneAndEmail(request.getPhone(), request.getEmail()).getPasswordHash().equals(passwordEncoder.encode(request.getPassword())))){
+            throw new WrongPasswordException("Wrong password!");
+        }
+
+        UserResponse response = UserResponse.builder()
+                .fullName(request.getFullName())
+                .phone(request.getPhone())
+                .email(request.getEmail())
+                .role(userRepository.findByPhoneAndEmail(request.getPhone(), request.getEmail()).getRole())
+                .build();
+
+        return ResponseEntity.ok(response);
+
+    }
 
 }

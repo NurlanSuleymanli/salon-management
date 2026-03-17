@@ -15,10 +15,6 @@ spring:
     username: postgres
     password: postgres
 
-#  security:
-#    user:
-#      name: admin
-#      password: admin123
 
 
 
