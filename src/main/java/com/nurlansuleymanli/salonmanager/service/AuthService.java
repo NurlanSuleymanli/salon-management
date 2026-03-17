@@ -72,8 +72,10 @@ public class AuthService {
             throw new UserNotFoundException("User not found!");
         }
 
-        if(!(userRepository.findByPhoneAndEmail(request.getPhone(), request.getEmail()).getPasswordHash().equals(passwordEncoder.encode(request.getPassword())))){
-            throw new WrongPasswordException("Wrong password!");
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        if(!(passwordEncoder.matches(request.getPassword(), encodedPassword ))){
+            throw new WrongPasswordException("Password is wrong!");
         }
 
         UserResponse response = UserResponse.builder()
