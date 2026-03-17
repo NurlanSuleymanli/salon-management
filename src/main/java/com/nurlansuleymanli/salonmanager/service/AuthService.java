@@ -19,21 +19,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
 
-     UserRepository userRepository;
-     PasswordEncoder passwordEncoder;
+    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> registerUser(@Valid UserRequest request) {
 
-        if (userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyExistException("Email is taken!");
         }
-        if (userRepository.findByPhone(request.getPhone()).isPresent()){
+        if (userRepository.findByPhone(request.getPhone()).isPresent()) {
             throw new PhoneNumberAlreadyExistException("Phone number is taken!");
         }
 
@@ -62,27 +61,25 @@ public class AuthService {
     }
 
 
-    public ResponseEntity<?> loginUser(@Valid UserRequest request){
+    public ResponseEntity<?> loginUser(@Valid UserRequest request) {
 
+        UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        if (userRepository.findByEmail(request.getEmail()).isEmpty()){
+        if (userRepository.findByPhone(request.getPhone()).isEmpty()) {
             throw new UserNotFoundException("User not found!");
         }
-        if (userRepository.findByPhone(request.getPhone()).isEmpty()){
-            throw new UserNotFoundException("User not found!");
-        }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = user.getPasswordHash();
 
-        if(!(passwordEncoder.matches(request.getPassword(), encodedPassword ))){
+        if (!(passwordEncoder.matches(request.getPassword(), encodedPassword))) {
             throw new WrongPasswordException("Password is wrong!");
         }
 
         UserResponse response = UserResponse.builder()
-                .fullName(request.getFullName())
-                .phone(request.getPhone())
-                .email(request.getEmail())
-                .role(userRepository.findByPhoneAndEmail(request.getPhone(), request.getEmail()).getRole())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
 
         return ResponseEntity.ok(response);
