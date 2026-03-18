@@ -1,17 +1,16 @@
 package com.nurlansuleymanli.salonmanager.model.dto.response;
 
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserResponse {
-
-
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class AuthResponse {
+    String token;
     String fullName;
     String email;
     String phone;

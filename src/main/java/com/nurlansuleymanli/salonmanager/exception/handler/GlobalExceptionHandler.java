@@ -6,9 +6,12 @@ import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
 import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -32,6 +35,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WrongPasswordException.class)
     public ResponseEntity<?> handleWrongPassword(WrongPasswordException e){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentials(BadCredentialsException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "E-poçt və ya parol yanlışdır!"));
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGeneralExceptions(Exception e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error_description", e.getMessage(), "message", "Daxili sistem xətası yaşandı."));
     }
 
 }

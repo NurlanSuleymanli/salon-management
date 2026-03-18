@@ -3,21 +3,22 @@ package com.nurlansuleymanli.salonmanager.service;
 import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
-import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
-import com.nurlansuleymanli.salonmanager.model.dto.response.UserResponse;
+import com.nurlansuleymanli.salonmanager.model.dto.response.AuthResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
+import com.nurlansuleymanli.salonmanager.security.JwtService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +27,14 @@ public class AuthService {
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    JwtService jwtService;
+    AuthenticationManager authenticationManager;
 
     public ResponseEntity<?> registerUser(@Valid UserRequest request) {
 
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyExistException("Email is taken!");
         }
         if (userRepository.findByPhone(request.getPhone()).isPresent()) {
@@ -40,7 +45,7 @@ public class AuthService {
 
         UserEntity user = UserEntity.builder()
                 .fullName(request.getFullName())
-                .email(request.getEmail())
+                .email(email)
                 .phone(request.getPhone())
                 .passwordHash(encodedPassword)
                 .role(Role.CUSTOMER)
@@ -49,7 +54,10 @@ public class AuthService {
 
         userRepository.save(user);
 
-        UserResponse response = UserResponse.builder()
+        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+
+        AuthResponse response = AuthResponse.builder()
+                .token(jwtToken)
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
@@ -62,20 +70,23 @@ public class AuthService {
 
 
     public ResponseEntity<?> loginUser(@Valid UserRequest request) {
+        
+        String email = request.getEmail().trim().toLowerCase();
 
-        UserEntity user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        email,
+                        request.getPassword()
+                )
+        );
 
-        if (userRepository.findByPhone(request.getPhone()).isEmpty()) {
-            throw new UserNotFoundException("User not found!");
-        }
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        String encodedPassword = user.getPasswordHash();
+        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
 
-        if (!(passwordEncoder.matches(request.getPassword(), encodedPassword))) {
-            throw new WrongPasswordException("Password is wrong!");
-        }
-
-        UserResponse response = UserResponse.builder()
+        AuthResponse response = AuthResponse.builder()
+                .token(jwtToken)
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
