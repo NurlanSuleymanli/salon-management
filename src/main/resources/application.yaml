@@ -20,6 +20,14 @@ logging:
   level:
     org.springframework.security: DEBUG
 
+
+
+app:
+  jwt:
+    secret: bXktc2Fsb24tbWFuYWdlci1wcm9qZWN0LXNlY3VyaXR5LXNlY3JldC1rZXl3b3JkLWZvci1qd3Qtc2VydmljZQ==
+    expiration: 300000
+
+
 server:
   port: 8080
 
