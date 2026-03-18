@@ -2,6 +2,7 @@ package com.nurlansuleymanli.salonmanager.controller;
 
 
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
+import com.nurlansuleymanli.salonmanager.model.dto.request.RefreshTokenRequest;
 import com.nurlansuleymanli.salonmanager.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -31,6 +32,9 @@ public class AuthController {
          return authService.loginUser(request);
     }
 
-
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenRequest request){
+        return authService.refreshToken(request);
+    }
 
 }

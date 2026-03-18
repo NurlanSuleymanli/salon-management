@@ -5,6 +5,7 @@ import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistExcept
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
+import com.nurlansuleymanli.salonmanager.model.dto.request.RefreshTokenRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.AuthResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
@@ -19,6 +20,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,9 +58,11 @@ public class AuthService {
         userRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
         AuthResponse response = AuthResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
@@ -65,7 +70,6 @@ public class AuthService {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
 
 
@@ -84,9 +88,11 @@ public class AuthService {
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
         AuthResponse response = AuthResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
@@ -94,7 +100,31 @@ public class AuthService {
                 .build();
 
         return ResponseEntity.ok(response);
-
     }
 
+    public ResponseEntity<?> refreshToken(@Valid RefreshTokenRequest request) {
+        String reqRefreshToken = request.getRefreshToken();
+
+        if (!jwtService.isValid(reqRefreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Refresh token is expired!"));
+        }
+
+        String email = jwtService.extractEmail(reqRefreshToken);
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+        String newAccessToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
+
+        AuthResponse response = AuthResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }
