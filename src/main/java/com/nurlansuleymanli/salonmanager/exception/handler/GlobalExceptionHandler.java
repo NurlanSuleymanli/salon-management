@@ -4,6 +4,7 @@ import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
 import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,6 +15,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
 
     @ExceptionHandler(EmailAlreadyExistException.class)
     public ResponseEntity<?> handleEmailExists(EmailAlreadyExistException e){
@@ -43,6 +46,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
     public ResponseEntity<?> handleDisabledAccount(org.springframework.security.authentication.DisabledException e){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Your account has been blocked by the admin or has not been activated yet!"));
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredToken(ExpiredJwtException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message" , "Access Token is expired!"));
     }
 
 
