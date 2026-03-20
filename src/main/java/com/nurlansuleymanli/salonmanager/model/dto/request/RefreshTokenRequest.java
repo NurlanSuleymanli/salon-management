@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RefreshTokenRequest {
-    @NotBlank(message = "Refresh token boş ola bilməz")
+    @NotBlank(message = "Refresh token cannot be empty!")
     String refreshToken;
 }

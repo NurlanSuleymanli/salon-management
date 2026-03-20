@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthResponse {
     String accessToken;
-    String refreshToken; // Əlavə olundu
+    String refreshToken;
     String fullName;
     String email;
     String phone;
