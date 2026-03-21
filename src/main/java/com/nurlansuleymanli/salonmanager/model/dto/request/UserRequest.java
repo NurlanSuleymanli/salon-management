@@ -27,7 +27,7 @@ public class UserRequest {
     String phone;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(min= 6 , max = 255)
     String password;
 
 }

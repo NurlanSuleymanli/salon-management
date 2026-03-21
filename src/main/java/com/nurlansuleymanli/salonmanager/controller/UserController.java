@@ -1,5 +1,6 @@
 package com.nurlansuleymanli.salonmanager.controller;
 
+import com.nurlansuleymanli.salonmanager.model.dto.request.ChangePasswordRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UpdateUserRequest;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.service.UserService;
@@ -34,5 +35,12 @@ public class UserController {
     public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal UserEntity user,
                                              @RequestBody @Valid UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateMyProfile(user, request));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserEntity user,
+                                            @RequestBody @Valid ChangePasswordRequest request){
+
+        return ResponseEntity.ok(userService.changePassword(user, request));
     }
 }

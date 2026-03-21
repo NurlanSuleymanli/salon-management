@@ -2,7 +2,10 @@ package com.nurlansuleymanli.salonmanager.service;
 
 import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
+import com.nurlansuleymanli.salonmanager.exception.SamePasswordException;
+import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
 import com.nurlansuleymanli.salonmanager.mapper.UserMapper;
+import com.nurlansuleymanli.salonmanager.model.dto.request.ChangePasswordRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UpdateUserRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.AuthResponse;
 import com.nurlansuleymanli.salonmanager.model.dto.response.UserResponse;
@@ -12,7 +15,11 @@ import com.nurlansuleymanli.salonmanager.security.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -22,6 +29,7 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
     JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponse getMyProfile(String email){
         return userMapper.toUserResponse(userRepository.findByEmail(email).get());
@@ -67,5 +75,23 @@ public class UserService {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .build();
+    }
+
+    public UserResponse changePassword(UserEntity user, ChangePasswordRequest request){
+       if(!passwordEncoder.matches(request.getOldPassword(), user.getPasswordHash())){
+           throw new WrongPasswordException("Password is wrong!");
+       }
+
+       if(Objects.equals(request.getOldPassword(), request.getNewPassword())){
+           throw new SamePasswordException("New Password cannot be the same as Old Password!");
+       }
+
+       user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+
+       userRepository.save(user);
+
+       return userMapper.toUserResponse(user);
+
+
     }
 }
