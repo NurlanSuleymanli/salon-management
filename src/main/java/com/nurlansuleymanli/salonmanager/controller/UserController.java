@@ -46,4 +46,9 @@ public class UserController {
     ){
         return ResponseEntity.ok(userService.getAllUsers(page, size));
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> changeUserStatus(@PathVariable Long id){
+        return ResponseEntity.ok(userService.changeUserStatus(id));
+    }
 }
