@@ -15,6 +15,9 @@ import com.nurlansuleymanli.salonmanager.security.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -87,11 +90,13 @@ public class UserService {
        }
 
        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
-
        userRepository.save(user);
 
        return userMapper.toUserResponse(user);
+    }
 
-
+    public Page<UserResponse> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAll(pageable).map(userMapper::toUserResponse);
     }
 }
