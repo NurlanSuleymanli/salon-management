@@ -23,7 +23,7 @@ public class ServiceEntity {
     Long id;
 
     @ManyToMany(mappedBy = "services", fetch = FetchType.LAZY)
-    private List<BarberEntity> barbers = new ArrayList<>();
+     List<BarberEntity> barbers = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "salon_id", nullable = false)
