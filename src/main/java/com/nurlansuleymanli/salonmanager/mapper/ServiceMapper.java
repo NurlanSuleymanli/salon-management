@@ -1,5 +1,6 @@
 package com.nurlansuleymanli.salonmanager.mapper;
 
+import com.nurlansuleymanli.salonmanager.model.dto.request.ServiceRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
 import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import org.mapstruct.Mapper;
@@ -11,5 +12,8 @@ public interface ServiceMapper {
     @Mapping(target = "salonId", source = "salon.id")
     @Mapping(target = "salonName", source = "salon.name")
     ServiceResponseDto toServiceResponseDto(ServiceEntity serviceEntity);
+
+    @Mapping(target = "salon.id", source = "salonId")
+    ServiceEntity toServiceEntity(ServiceRequest serviceRequest);
 
 }
