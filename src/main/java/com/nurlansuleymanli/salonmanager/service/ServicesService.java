@@ -35,7 +35,7 @@ public class ServicesService {
 
     public Page<ServiceResponseDto> getServices(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ServiceEntity> entityPage = serviceRepository.findAll(pageable);
+        Page<ServiceEntity> entityPage = serviceRepository.findAllByIsActiveTrue(pageable);
         return entityPage.map(serviceMapper::toServiceResponseDto);
     }
 
@@ -60,20 +60,22 @@ public class ServicesService {
 
     public ServiceResponseDto updateService(ServiceRequest request, Long id){
 
-        if(serviceRepository.findById(id).isEmpty()){
-            throw new ServiceNotFoundException("Service not found!");
-        }
+        ServiceEntity serviceEntity = serviceRepository.findById(id)
+                .orElseThrow(()-> new ServiceNotFoundException("Service not found!"));
 
-        ServiceEntity changedService = serviceMapper.toServiceEntity(request);
 
         SalonEntity salon = salonRepository.findById(request.getSalonId())
                 .orElseThrow(() -> new NoAvailableSalonException("Salon not available!"));
 
-        changedService.setSalon(salon);
+        serviceEntity.setSalon(salon);
+        serviceEntity.setName(request.getName());
+        serviceEntity.setPrice(request.getPrice());
+        serviceEntity.setDurationMin(request.getDurationMin());
 
-        serviceRepository.save(changedService);
 
-        return serviceMapper.toServiceResponseDto(changedService);
+        serviceRepository.save(serviceEntity);
+
+        return serviceMapper.toServiceResponseDto(serviceEntity);
 
     }
 
@@ -85,7 +87,8 @@ public class ServicesService {
             throw new ServiceNotFoundException("Service not found!");
         }
 
-        serviceRepository.deleteById(id);
+        serviceEntity.get().setActive(false);
+        serviceRepository.save(serviceEntity.get());
 
         return serviceMapper.toServiceResponseDto(serviceEntity.get());
 

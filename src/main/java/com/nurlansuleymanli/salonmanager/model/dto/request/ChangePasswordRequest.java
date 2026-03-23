@@ -17,10 +17,10 @@ public class ChangePasswordRequest {
 
     @NotBlank
     @Size(min = 6)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")
     String oldPassword;
     @NotBlank
     @Size(min = 6)
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")
     String newPassword;
 
 }
