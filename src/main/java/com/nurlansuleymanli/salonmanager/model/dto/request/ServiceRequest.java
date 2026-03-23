@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.NumberFormat;
-
 import java.math.BigDecimal;
 
 @Data
@@ -17,11 +15,10 @@ import java.math.BigDecimal;
 public class ServiceRequest {
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9əöğçşiüƏÖĞÇŞİÜ\\s\\-\\.,]+$")
+    @Pattern(regexp = "^[a-zA-Z0-9əöğçşiüƏÇŞİÖĞÜ\\s\\-.,]+$")
     String name;
 
     @NotNull
-    @NumberFormat
     Integer durationMin;
 
     @NotNull

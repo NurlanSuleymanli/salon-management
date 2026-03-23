@@ -38,5 +38,20 @@ public class ServiceController {
         ServiceResponseDto response = servicesService.createService(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
     }
+
+
+    @PutMapping("/{id}/update")
+    public ResponseEntity<?> updateService(@RequestBody @Valid ServiceRequest request){
+
+        ServiceResponseDto response = servicesService.updateService(request);
+
+        return ResponseEntity.ok(response);
+
+    }
+
+
+
+
 }

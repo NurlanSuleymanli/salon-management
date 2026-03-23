@@ -2,6 +2,8 @@ package com.nurlansuleymanli.salonmanager.service;
 
 
 import com.nurlansuleymanli.salonmanager.exception.NoAvailableSalonException;
+import com.nurlansuleymanli.salonmanager.exception.ServiceAlreadyExistException;
+import com.nurlansuleymanli.salonmanager.exception.ServiceNotFoundException;
 import com.nurlansuleymanli.salonmanager.mapper.ServiceMapper;
 import com.nurlansuleymanli.salonmanager.model.dto.request.ServiceRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
@@ -35,6 +37,10 @@ public class ServicesService {
 
     public ServiceResponseDto createService(ServiceRequest request){
 
+        if(serviceRepository.findByName(request.getName()).isPresent()){
+            throw new ServiceAlreadyExistException("Service already exist!");
+        }
+
         ServiceEntity newService = serviceMapper.toServiceEntity(request);
 
         SalonEntity salon = salonRepository.findById(request.getSalonId())
@@ -45,6 +51,25 @@ public class ServicesService {
         serviceRepository.save(newService);
 
         return serviceMapper.toServiceResponseDto(newService);
+    }
+
+
+    public ServiceResponseDto updateService(ServiceRequest request){
+        if(serviceRepository.findByName(request.getName()).isEmpty()){
+            throw new ServiceNotFoundException("Service not found!");
+        }
+
+        ServiceEntity changedService = serviceMapper.toServiceEntity(request);
+
+        SalonEntity salon = salonRepository.findById(request.getSalonId())
+                .orElseThrow(() -> new NoAvailableSalonException("Salon not available!"));
+
+        changedService.setSalon(salon);
+
+        serviceRepository.save(changedService);
+
+        return serviceMapper.toServiceResponseDto(changedService);
+
     }
 
 }

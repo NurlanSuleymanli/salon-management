@@ -1,9 +1,6 @@
 package com.nurlansuleymanli.salonmanager.exception.handler;
 
-import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
-import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
-import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
-import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
+import com.nurlansuleymanli.salonmanager.exception.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +60,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(Exception e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Please use only numbers in URL parameters!"));
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    public ResponseEntity<?> handleServiceAlready(ServiceNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Service not found!"));
+    }
+
+    @ExceptionHandler(ServiceAlreadyExistException.class)
+    public ResponseEntity<?> handleServiceAlready(ServiceAlreadyExistException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Service already exist!"));
     }
 
 
