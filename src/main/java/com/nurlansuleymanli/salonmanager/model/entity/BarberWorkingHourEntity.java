@@ -53,6 +53,9 @@ public class BarberWorkingHourEntity {
     @PrePersist
     @PreUpdate
     private void validate() {
+        if (startTime == null || endTime == null) {
+            throw new IllegalArgumentException("startTime and endTime must not be null!");
+        }
         if (!startTime.isBefore(endTime)) {
             throw new IllegalArgumentException("startTime must be before endTime");
         }

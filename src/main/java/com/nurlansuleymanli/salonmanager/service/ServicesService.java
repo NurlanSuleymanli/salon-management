@@ -11,6 +11,7 @@ import com.nurlansuleymanli.salonmanager.model.entity.SalonEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import com.nurlansuleymanli.salonmanager.repository.SalonRepository;
 import com.nurlansuleymanli.salonmanager.repository.ServiceRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class ServicesService {
