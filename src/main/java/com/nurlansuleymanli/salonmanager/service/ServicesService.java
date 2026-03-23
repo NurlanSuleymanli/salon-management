@@ -19,6 +19,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -54,8 +56,9 @@ public class ServicesService {
     }
 
 
-    public ServiceResponseDto updateService(ServiceRequest request){
-        if(serviceRepository.findByName(request.getName()).isEmpty()){
+    public ServiceResponseDto updateService(ServiceRequest request, Long id){
+
+        if(serviceRepository.findById(id).isEmpty()){
             throw new ServiceNotFoundException("Service not found!");
         }
 
@@ -69,6 +72,22 @@ public class ServicesService {
         serviceRepository.save(changedService);
 
         return serviceMapper.toServiceResponseDto(changedService);
+
+    }
+
+    public ServiceResponseDto deleteService(Long id){
+
+        Optional<ServiceEntity> serviceEntity = serviceRepository.findById(id);
+
+        if(serviceEntity.isEmpty()){
+            throw new ServiceNotFoundException("Service not found!");
+        }
+
+        serviceRepository.deleteById(id);
+
+        return serviceMapper.toServiceResponseDto(serviceEntity.get());
+
+
 
     }
 

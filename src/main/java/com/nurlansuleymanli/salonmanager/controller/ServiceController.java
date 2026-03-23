@@ -7,6 +7,7 @@ import com.nurlansuleymanli.salonmanager.service.ServicesService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -43,15 +44,20 @@ public class ServiceController {
 
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<?> updateService(@RequestBody @Valid ServiceRequest request){
+    public ResponseEntity<?> updateService(@RequestBody @Valid ServiceRequest request, @PathVariable Long id){
 
-        ServiceResponseDto response = servicesService.updateService(request);
+        ServiceResponseDto response = servicesService.updateService(request,id);
 
         return ResponseEntity.ok(response);
 
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteService(@PathVariable Long id){
 
+        return ResponseEntity.ok(servicesService.deleteService(id));
+
+    }
 
 
 }
