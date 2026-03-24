@@ -1,9 +1,6 @@
 package com.nurlansuleymanli.salonmanager.service;
 
-import com.nurlansuleymanli.salonmanager.exception.EmailAlreadyExistException;
-import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistException;
-import com.nurlansuleymanli.salonmanager.exception.SamePasswordException;
-import com.nurlansuleymanli.salonmanager.exception.WrongPasswordException;
+import com.nurlansuleymanli.salonmanager.exception.*;
 import com.nurlansuleymanli.salonmanager.mapper.UserMapper;
 import com.nurlansuleymanli.salonmanager.model.dto.request.ChangePasswordRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UpdateUserRequest;
@@ -33,7 +30,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse getMyProfile(String email){
-        return userMapper.toUserResponse(userRepository.findByEmail(email).get());
+        return userMapper.toUserResponse(
+                userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UserNotFoundException("User not found!"))
+        );
     }
 
     public UserResponse updateMyProfile(UserEntity user, UpdateUserRequest request) {
@@ -88,7 +88,7 @@ public class UserService {
 
     public UserResponse changeUserStatus(Long id){
 
-        UserEntity user = userRepository.findById(id).orElseThrow();
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         user.setActive(!user.isActive());
 

@@ -14,7 +14,10 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "barbers", schema = "public")
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class BarberEntity {
 
     @Id

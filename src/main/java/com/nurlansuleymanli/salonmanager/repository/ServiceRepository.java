@@ -1,7 +1,7 @@
 package com.nurlansuleymanli.salonmanager.repository;
 
 
-import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
+
 import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

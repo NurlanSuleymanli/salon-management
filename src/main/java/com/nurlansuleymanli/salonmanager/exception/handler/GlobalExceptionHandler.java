@@ -75,6 +75,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Service already exist!"));
     }
 
+    @ExceptionHandler(BarberNotFoundException.class)
+    public ResponseEntity<?> handleBarberNotFound(BarberNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Barber not found!"));
+    }
+
+    @ExceptionHandler(BarberAlreadyExistException.class)
+    public ResponseEntity<?> handleBarberAlreadyExist(BarberAlreadyExistException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Barber already exist!"));
+    }
+
+    @ExceptionHandler(AdminCannotBeBarberException.class)
+    public ResponseEntity<?> handleAdminCannotBeBarber(AdminCannotBeBarberException e){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException e) {
 
