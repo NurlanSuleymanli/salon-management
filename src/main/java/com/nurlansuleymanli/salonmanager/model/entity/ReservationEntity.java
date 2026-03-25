@@ -17,6 +17,9 @@ import java.time.Instant;
                 @Index(name = "idx_resv_barber_start_end", columnList = "barber_id, start_at, end_at")
         })
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReservationEntity {
 
     @Id

@@ -90,6 +90,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
     }
 
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public ResponseEntity<?> handleReservationNotFound(ReservationNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+    }
+
+    @ExceptionHandler(TimeSlotNotAvailableException.class)
+    public ResponseEntity<?> handleTimeSlotNotAvailable(TimeSlotNotAvailableException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", e.getMessage()));
+    }
+
+    @ExceptionHandler(ReservationCancellationNotAllowedException.class)
+    public ResponseEntity<?> handleCancellationNotAllowed(ReservationCancellationNotAllowedException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException e) {
 
