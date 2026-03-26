@@ -50,6 +50,7 @@ public class ReservationEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     ReservationStatus status = ReservationStatus.PENDING;
 
     @Column(name = "cancelled_at")

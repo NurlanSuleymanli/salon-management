@@ -50,6 +50,10 @@ public class ReservationService {
         BarberEntity barber = barberRepository.findById(request.getBarberId())
                 .orElseThrow(() -> new BarberNotFoundException("Barber not found!"));
 
+        if (!barber.isActive()) {
+            throw new IllegalArgumentException("This barber is currently not accepting reservations!");
+        }
+
         ServiceEntity service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new ServiceNotFoundException("Service not found!"));
 
@@ -58,6 +62,10 @@ public class ReservationService {
 
         if (startAt.isBefore(Instant.now())) {
             throw new IllegalArgumentException("Reservation time cannot be in the past!");
+        }
+
+        if (request.getStartTime().getMinute() % 30 != 0) {
+            throw new IllegalArgumentException("Reservations can only be made at 30-minute intervals (e.g., 10:00, 10:30)!");
         }
 
         Instant endAt = startAt.plusSeconds(service.getDurationMin() * 60L);
@@ -104,6 +112,10 @@ public class ReservationService {
             throw new ReservationCancellationNotAllowedException("This reservation is already cancelled!");
         }
 
+        if (reservation.getStatus() == ReservationStatus.COMPLETED || reservation.getStatus() == ReservationStatus.NO_SHOW) {
+            throw new ReservationCancellationNotAllowedException("Completed or no-show reservations cannot be cancelled!");
+        }
+
         long minutesUntilStart = (reservation.getStartAt().getEpochSecond() - Instant.now().getEpochSecond()) / 60;
         if (minutesUntilStart < 120) {
             throw new ReservationCancellationNotAllowedException("Reservations can only be cancelled at least 2 hours before the appointment!");
@@ -130,6 +142,10 @@ public class ReservationService {
     public ReservationResponseDto updateReservationStatus(Long id, UpdateReservationStatusRequest request) {
         ReservationEntity reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException("Reservation not found!"));
+
+        if (request.getStatus() == ReservationStatus.PENDING) {
+            throw new IllegalArgumentException("Cannot manually set reservation status back to PENDING!");
+        }
 
         reservation.setStatus(request.getStatus());
         reservationRepository.save(reservation);

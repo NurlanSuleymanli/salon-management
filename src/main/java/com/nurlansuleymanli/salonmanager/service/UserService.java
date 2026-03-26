@@ -97,6 +97,13 @@ public class UserService {
         return userMapper.toUserResponse(user);
 
 
+    public UserResponse makeAdmin(Long id){
 
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+        user.setRole(Role.ADMIN);
+        userRepository.save(user);
+
+        return userMapper.toUserResponse(user);
     }
 }

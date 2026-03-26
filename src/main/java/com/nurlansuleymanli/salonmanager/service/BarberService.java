@@ -5,6 +5,7 @@ import com.nurlansuleymanli.salonmanager.exception.BarberAlreadyExistException;
 import com.nurlansuleymanli.salonmanager.exception.BarberNotFoundException;
 import com.nurlansuleymanli.salonmanager.exception.NoAvailableSalonException;
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
+import com.nurlansuleymanli.salonmanager.model.enums.ReservationStatus;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.mapper.BarberMapper;
 import com.nurlansuleymanli.salonmanager.mapper.ServiceMapper;
@@ -139,6 +140,10 @@ public class BarberService {
     }
 
     public List<String> getAvailableSlots(Long barberId, LocalDate date) {
+        if (!barberRepository.existsById(barberId)) {
+            throw new BarberNotFoundException("Barber not found!");
+        }
+
         BarberWorkingHourEntity workingHour = barberWorkingHourRepository
                 .findByBarberIdAndDayOfWeek(barberId, date.getDayOfWeek())
                 .orElseThrow(() -> new IllegalArgumentException("The barber's work schedule is not set today!"));
@@ -172,7 +177,7 @@ public class BarberService {
 
             boolean isReserved = false;
             for (ReservationEntity res : reservations) {
-                if (res.getStatus().name().equals("CANCELLED") || res.getStatus().name().equals("REJECTED")) continue;
+                if (res.getStatus() == ReservationStatus.CANCELLED || res.getStatus() == ReservationStatus.NO_SHOW) continue;
 
                 LocalTime resStart = LocalDateTime.ofInstant(res.getStartAt(), zoneId).toLocalTime();
                 LocalTime resEnd = LocalDateTime.ofInstant(res.getEndAt(), zoneId).toLocalTime();
