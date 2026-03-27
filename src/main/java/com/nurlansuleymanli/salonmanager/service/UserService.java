@@ -6,6 +6,7 @@ import com.nurlansuleymanli.salonmanager.model.dto.request.ChangePasswordRequest
 import com.nurlansuleymanli.salonmanager.model.dto.request.UpdateUserRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.UserResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
+import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -47,7 +48,7 @@ public class UserService {
         }
 
         String newEmail = request.getEmail().trim().toLowerCase();
-        
+
         if (!user.getEmail().equals(newEmail)) {
             if (userRepository.findByEmail(newEmail).isPresent()) {
                 throw new EmailAlreadyExistException("Email is taken!");
@@ -86,7 +87,7 @@ public class UserService {
         return userRepository.findAll(pageable).map(userMapper::toUserResponse);
     }
 
-    public UserResponse changeUserStatus(Long id){
+    public UserResponse changeUserStatus(Long id) {
 
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
 
@@ -95,15 +96,16 @@ public class UserService {
         userRepository.save(user);
 
         return userMapper.toUserResponse(user);
-
-
-    public UserResponse makeAdmin(Long id){
-
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
-
-        user.setRole(Role.ADMIN);
-        userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
     }
+
+        public UserResponse makeAdmin (Long id){
+
+            UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+
+            user.setRole(Role.ADMIN);
+            userRepository.save(user);
+
+            return userMapper.toUserResponse(user);
+        }
+
 }

@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -40,9 +42,11 @@ public class AuthService {
         String email = request.getEmail().trim().toLowerCase();
 
         if (userRepository.findByEmail(email).isPresent()) {
+            log.warn("Registration failed: Email {} is already taken", email);
             throw new EmailAlreadyExistException("Email is taken!");
         }
         if (userRepository.findByPhone(request.getPhone()).isPresent()) {
+            log.warn("Registration failed: Phone number {} is already taken", request.getPhone());
             throw new PhoneNumberAlreadyExistException("Phone number is taken!");
         }
 
@@ -70,6 +74,8 @@ public class AuthService {
                 .phone(user.getPhone())
                 .role(user.getRole())
                 .build();
+
+        log.info("New user registered successfully: {} (ID: {})", user.getEmail(), user.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -101,6 +107,8 @@ public class AuthService {
                 .role(user.getRole())
                 .build();
 
+        log.info("User logged in successfully: {} (ID: {})", user.getEmail(), user.getId());
+
         return ResponseEntity.ok(response);
     }
 
@@ -108,6 +116,7 @@ public class AuthService {
         String reqRefreshToken = request.getRefreshToken();
 
         if (!jwtService.isValid(reqRefreshToken)) {
+            log.warn("Refresh token attempt failed: token is expired or invalid");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Refresh token is expired!"));
         }
 
@@ -126,6 +135,8 @@ public class AuthService {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .build();
+
+        log.info("Tokens refreshed successfully for user: {} (ID: {})", user.getEmail(), user.getId());
 
         return ResponseEntity.ok(response);
     }

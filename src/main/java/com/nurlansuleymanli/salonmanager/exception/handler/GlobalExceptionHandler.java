@@ -108,7 +108,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException e) {
 
-        log.info(e.getMessage());
+        log.warn("Validation Error: {}", e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", "Validation error: Data entered in incorrect format!"));
@@ -118,7 +118,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneralExceptions(Exception e){
 
-        log.info(e.getMessage());
+        log.error("Internal Server Error: ", e);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of( "message", "An internal system error has occurred! Please try again later."));
     }

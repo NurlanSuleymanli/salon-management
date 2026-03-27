@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -90,6 +92,9 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
+        log.info("New reservation created successfully: ID {} for customer {} with barber {} at {}", 
+                reservation.getId(), customer.getEmail(), barber.getId(), startAt);
+
         return reservationMapper.toReservationResponseDto(reservation);
     }
 
@@ -126,6 +131,8 @@ public class ReservationService {
         reservation.setCancelReason("Cancelled by customer");
         reservationRepository.save(reservation);
 
+        log.info("Reservation ID {} has been successfully cancelled by customer {}", id, customer.getEmail());
+
         return reservationMapper.toReservationResponseDto(reservation);
     }
 
@@ -149,6 +156,8 @@ public class ReservationService {
 
         reservation.setStatus(request.getStatus());
         reservationRepository.save(reservation);
+
+        log.info("Reservation ID {} status updated to {}", id, request.getStatus());
 
         return reservationMapper.toReservationResponseDto(reservation);
     }
