@@ -14,6 +14,7 @@ import com.nurlansuleymanli.salonmanager.model.entity.ReservationEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.model.enums.ReservationStatus;
+import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.repository.BarberRepository;
 import com.nurlansuleymanli.salonmanager.repository.ReservationRepository;
 import com.nurlansuleymanli.salonmanager.repository.ServiceRepository;
@@ -146,9 +147,19 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-    public ReservationResponseDto updateReservationStatus(Long id, UpdateReservationStatusRequest request) {
+    public ReservationResponseDto updateReservationStatus(Long id, UpdateReservationStatusRequest request, UserEntity user) {
         ReservationEntity reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ReservationNotFoundException("Reservation not found!"));
+
+        if (user.getRole() != Role.ADMIN) {
+            BarberEntity barber = barberRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new BarberNotFoundException("Barber profile not found!"));
+            if (!reservation.getBarber().getId().equals(barber.getId())) {
+                log.warn("IDOR Attempt: User {} tried to modify reservation {} owned by barber {}", 
+                         user.getEmail(), reservation.getId(), reservation.getBarber().getId());
+                throw new IllegalArgumentException("Access Denied: You can only update your own reservations!");
+            }
+        }
 
         if (request.getStatus() == ReservationStatus.PENDING) {
             throw new IllegalArgumentException("Cannot manually set reservation status back to PENDING!");

@@ -53,9 +53,10 @@ public class ReservationController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<ReservationResponseDto> updateReservationStatus(
+            @AuthenticationPrincipal UserEntity user,
             @PathVariable Long id,
             @RequestBody @Valid UpdateReservationStatusRequest request) {
-        return ResponseEntity.ok(reservationService.updateReservationStatus(id, request));
+        return ResponseEntity.ok(reservationService.updateReservationStatus(id, request, user));
     }
 
     @GetMapping("/all")
