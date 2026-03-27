@@ -7,6 +7,8 @@ import com.nurlansuleymanli.salonmanager.exception.ServiceNotFoundException;
 import com.nurlansuleymanli.salonmanager.mapper.ServiceMapper;
 import com.nurlansuleymanli.salonmanager.model.dto.request.ServiceRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
+import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceWithBarbersResponseDto;
+import com.nurlansuleymanli.salonmanager.model.entity.BarberEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.SalonEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import com.nurlansuleymanli.salonmanager.repository.SalonRepository;
@@ -20,7 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import com.nurlansuleymanli.salonmanager.mapper.BarberMapper;
 
 @Service
 @Transactional
@@ -31,12 +36,30 @@ public class ServicesService {
     ServiceRepository serviceRepository;
     SalonRepository salonRepository;
     ServiceMapper serviceMapper;
+    BarberMapper barberMapper;
 
 
     public Page<ServiceResponseDto> getServices(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ServiceEntity> entityPage = serviceRepository.findAllByIsActiveTrue(pageable);
         return entityPage.map(serviceMapper::toServiceResponseDto);
+    }
+
+    public List<ServiceWithBarbersResponseDto> getServicesWithBarbersBySalonId(Long salonId) {
+        List<ServiceEntity> services = serviceRepository.findAllBySalonIdAndIsActiveTrue(salonId);
+        
+        return services.stream().map(service -> 
+            ServiceWithBarbersResponseDto.builder()
+                .id(service.getId())
+                .name(service.getName())
+                .durationMin(service.getDurationMin())
+                .price(service.getPrice())
+                .barbers(service.getBarbers().stream()
+                        .filter(BarberEntity::isActive)
+                        .map(barberMapper::toBarberResponseDto)
+                        .collect(Collectors.toList()))
+                .build()
+        ).collect(Collectors.toList());
     }
 
     public ServiceResponseDto createService(ServiceRequest request){

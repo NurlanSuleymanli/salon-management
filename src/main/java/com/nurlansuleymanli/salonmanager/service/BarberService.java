@@ -120,7 +120,21 @@ public class BarberService {
 
     public Page<BarberResponseDto> getBarbers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return barberRepository.findAllByIsActiveTrue(pageable).map(barberMapper::toBarberResponseDto);
+        return barberRepository.findAllByIsActiveTrue(pageable)
+                .map(barberMapper::toBarberResponseDto);
+    }
+
+    public BarberResponseDto getBarberById(Long id) {
+        BarberEntity barber = barberRepository.findById(id)
+                .orElseThrow(() -> new BarberNotFoundException("Barber not found!"));
+        return barberMapper.toBarberResponseDto(barber);
+    }
+
+    public List<BarberResponseDto> getBarbersBySalonId(Long salonId) {
+        return barberRepository.findAllBySalonIdAndIsActiveTrue(salonId)
+                .stream()
+                .map(barberMapper::toBarberResponseDto)
+                .collect(Collectors.toList());
     }
 
     public BarberResponseDto changeBarberStatus(Long id) {

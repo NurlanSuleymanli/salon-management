@@ -65,4 +65,10 @@ public class SalonService {
         return salonRepository.findAllByIsActiveTrue(pageable)
                 .map(salonMapper::toSalonResponseDto);
     }
+
+    public SalonResponse getSalonById(Long id) {
+        SalonEntity salon = salonRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Salon not found!"));
+        return salonMapper.toSalonResponseDto(salon);
+    }
 }

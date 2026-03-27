@@ -46,6 +46,16 @@ public class BarberController {
         return ResponseEntity.ok(barberService.getBarbers(page, size));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BarberResponseDto> getBarberById(@PathVariable Long id) {
+        return ResponseEntity.ok(barberService.getBarberById(id));
+    }
+
+    @GetMapping("/salon/{salonId}")
+    public ResponseEntity<List<BarberResponseDto>> getBarbersBySalonId(@PathVariable Long salonId) {
+        return ResponseEntity.ok(barberService.getBarbersBySalonId(salonId));
+    }
+
     @PutMapping("/{id}/status")
     public ResponseEntity<BarberResponseDto> changeBarberStatus(@PathVariable Long id) {
         return ResponseEntity.ok(barberService.changeBarberStatus(id));
@@ -62,4 +72,6 @@ public class BarberController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(barberService.getAvailableSlots(id, date));
     }
+
+
 }

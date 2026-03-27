@@ -3,6 +3,7 @@ package com.nurlansuleymanli.salonmanager.controller;
 
 import com.nurlansuleymanli.salonmanager.model.dto.request.ServiceRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
+import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceWithBarbersResponseDto;
 import com.nurlansuleymanli.salonmanager.service.ServicesService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/services")
@@ -22,13 +24,15 @@ public class ServiceController {
     ServicesService servicesService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> getServices( @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<ServiceResponseDto>> getServices( @RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
-
         Page<ServiceResponseDto> responsePage = servicesService.getServices(page, size);
-
         return ResponseEntity.ok(responsePage);
+    }
 
+    @GetMapping("/salon/{salonId}/with-barbers")
+    public ResponseEntity<List<ServiceWithBarbersResponseDto>> getServicesWithBarbersBySalonId(@PathVariable Long salonId) {
+        return ResponseEntity.ok(servicesService.getServicesWithBarbersBySalonId(salonId));
     }
 
 
