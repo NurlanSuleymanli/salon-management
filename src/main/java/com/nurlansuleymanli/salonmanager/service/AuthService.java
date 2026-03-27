@@ -7,7 +7,9 @@ import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.RefreshTokenRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.AuthResponse;
+import com.nurlansuleymanli.salonmanager.model.entity.TokenBlacklistEntity;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
+import com.nurlansuleymanli.salonmanager.repository.TokenBlacklistRepository;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
 import com.nurlansuleymanli.salonmanager.security.JwtService;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.time.ZoneId;
 
 @Slf4j
 @Service
@@ -33,6 +36,7 @@ import java.util.Map;
 public class AuthService {
 
     UserRepository userRepository;
+    TokenBlacklistRepository tokenBlacklistRepository;
     PasswordEncoder passwordEncoder;
     JwtService jwtService;
     AuthenticationManager authenticationManager;
@@ -139,5 +143,22 @@ public class AuthService {
         log.info("Tokens refreshed successfully for user: {} (ID: {})", user.getEmail(), user.getId());
 
         return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<?> logoutUser(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
+
+            if (!tokenBlacklistRepository.existsByToken(jwt) && jwtService.isValid(jwt)) {
+                TokenBlacklistEntity blacklistEntity = TokenBlacklistEntity.builder()
+                        .token(jwt)
+                        .expiresAt(jwtService.extractExpiration(jwt).toInstant())
+                        .build();
+
+                tokenBlacklistRepository.save(blacklistEntity);
+                log.info("Token explicitly blacklisted (Logged Out): {}", jwt.substring(0, 15) + "...");
+            }
+        }
+        return ResponseEntity.ok(Map.of("message", "Successfully logged out!"));
     }
 }

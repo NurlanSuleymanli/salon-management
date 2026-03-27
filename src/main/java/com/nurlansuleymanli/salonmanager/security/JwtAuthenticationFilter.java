@@ -1,10 +1,13 @@
 package com.nurlansuleymanli.salonmanager.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.nurlansuleymanli.salonmanager.repository.TokenBlacklistRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,12 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     @Override
     protected void doFilterInternal(
-             HttpServletRequest request,
-             HttpServletResponse response,
-             FilterChain filterChain
+            HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         try {
             final String authHeader = request.getHeader("Authorization");
@@ -43,6 +47,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             userEmail = jwtService.extractEmail(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (tokenBlacklistRepository.existsByToken(jwt)) {
+                    throw new JwtException("Token has been revoked (Logged out)");
+                }
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isValid(jwt)) {

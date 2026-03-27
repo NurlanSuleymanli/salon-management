@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +36,11 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenRequest request){
         return authService.refreshToken(request);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader){
+        return authService.logoutUser(authHeader);
     }
 
 }
