@@ -46,4 +46,12 @@ public class SalonController {
     public ResponseEntity<SalonResponse> getSalonById(@PathVariable Long id) {
         return ResponseEntity.ok(salonService.getSalonById(id));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<SalonResponse>> searchSalons(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(salonService.searchSalons(name, page, size));
+    }
 }

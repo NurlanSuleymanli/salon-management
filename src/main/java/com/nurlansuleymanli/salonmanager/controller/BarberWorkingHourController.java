@@ -43,4 +43,9 @@ public class BarberWorkingHourController {
             @AuthenticationPrincipal UserEntity user) {
         return ResponseEntity.ok(service.getMyWorkingHours(user));
     }
+
+    @GetMapping("/barber/{barberId}")
+    public ResponseEntity<List<BarberWorkingHourResponse>> getBarberSchedule(@PathVariable Long barberId) {
+        return ResponseEntity.ok(service.getBarberSchedule(barberId));
+    }
 }

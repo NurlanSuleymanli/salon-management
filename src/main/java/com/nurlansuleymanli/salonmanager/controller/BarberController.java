@@ -73,5 +73,10 @@ public class BarberController {
         return ResponseEntity.ok(barberService.getAvailableSlots(id, date));
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<BarberResponseDto>> getBarbersByServiceId(@RequestParam Long serviceId) {
+        return ResponseEntity.ok(barberService.getBarbersByServiceId(serviceId));
+    }
+
 
 }

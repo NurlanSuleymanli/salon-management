@@ -1,5 +1,6 @@
 package com.nurlansuleymanli.salonmanager.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -66,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+        } catch (ExpiredJwtException ex) {
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }
     }

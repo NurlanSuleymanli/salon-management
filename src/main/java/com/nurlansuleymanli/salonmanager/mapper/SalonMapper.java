@@ -12,7 +12,11 @@ public interface SalonMapper {
 
     SalonEntity toSalonEntity(SalonRequest request);
 
-    SalonResponse toSalonResponseDto(SalonEntity entity);
+
+    @Mapping(target = "isActive", source = "active")
+    SalonResponse toSalonResponse(SalonEntity entity);
+
+
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "salonWorkingHours", ignore = true)

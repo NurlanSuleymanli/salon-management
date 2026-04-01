@@ -11,6 +11,7 @@ public interface BarberMapper {
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "salonId", source = "salon.id")
     @Mapping(target = "salonName", source = "salon.name")
+    @Mapping(target = "isActive", source = "active")
     BarberResponseDto toBarberResponseDto(BarberEntity barberEntity);
 
 }

@@ -211,4 +211,10 @@ public class BarberService {
 
         return availableSlots;
     }
+
+    public List<BarberResponseDto> getBarbersByServiceId(Long id){
+        return barberRepository.findAllByServicesId(id).stream()
+                .map(barberMapper::toBarberResponseDto)
+                .toList();
+    }
 }

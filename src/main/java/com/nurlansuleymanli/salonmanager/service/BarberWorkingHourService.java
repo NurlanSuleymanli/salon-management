@@ -74,4 +74,14 @@ public class BarberWorkingHourService {
                 .map(mapper::toResponseDto)
                 .collect(Collectors.toList());
     }
+
+    public List<BarberWorkingHourResponse> getBarberSchedule(Long barberId) {
+        BarberEntity barber = barberRepository.findById(barberId)
+                .orElseThrow(() -> new BarberNotFoundException("Barber not found!"));
+
+        return workingHourRepository.findAllByBarberId(barber.getId())
+                .stream()
+                .map(mapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
 }

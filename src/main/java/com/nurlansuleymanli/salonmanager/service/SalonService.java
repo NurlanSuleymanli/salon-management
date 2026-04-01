@@ -32,7 +32,7 @@ public class SalonService {
         salon.setActive(true);
         salonRepository.save(salon);
 
-        return salonMapper.toSalonResponseDto(salon);
+        return salonMapper.toSalonResponse(salon);
     }
 
     public SalonResponse updateSalon(Long id, SalonRequest request) {
@@ -47,7 +47,7 @@ public class SalonService {
         salonMapper.updateEntityFromRequest(request, salon);
         salonRepository.save(salon);
 
-        return salonMapper.toSalonResponseDto(salon);
+        return salonMapper.toSalonResponse(salon);
     }
 
     public SalonResponse deleteSalon(Long id) {
@@ -57,18 +57,25 @@ public class SalonService {
         salon.setActive(false);
         salonRepository.save(salon);
 
-        return salonMapper.toSalonResponseDto(salon);
+        return salonMapper.toSalonResponse(salon);
     }
 
     public Page<SalonResponse> getSalons(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return salonRepository.findAllByIsActiveTrue(pageable)
-                .map(salonMapper::toSalonResponseDto);
+                .map(salonMapper::toSalonResponse);
     }
 
     public SalonResponse getSalonById(Long id) {
         SalonEntity salon = salonRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Salon not found!"));
-        return salonMapper.toSalonResponseDto(salon);
+        return salonMapper.toSalonResponse(salon);
+    }
+
+    public Page<SalonResponse> searchSalons(String name, int page, int size){
+        Pageable pageable =PageRequest.of(page, size);
+        return salonRepository.findAllByNameAndIsActiveTrue(name,pageable)
+                .map(salonMapper::toSalonResponse);
+
     }
 }

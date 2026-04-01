@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/barbers/{id}/delete").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/barbers/{id}/status").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/api/working-hours/barber/**").permitAll()
                         .requestMatchers("/api/working-hours/**").hasRole("BARBER")
 
                         .requestMatchers(HttpMethod.GET, "/api/reservations/all").hasRole("ADMIN")
@@ -78,6 +79,7 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

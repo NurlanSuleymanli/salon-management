@@ -17,4 +17,6 @@ public interface SalonRepository extends JpaRepository<SalonEntity , Long> {
     Page<SalonEntity> findAllByIsActiveTrue(Pageable pageable);
 
     Optional<SalonEntity> findByName(String name);
+
+    Page<SalonEntity> findAllByNameAndIsActiveTrue(String name, Pageable pageable);
 }
