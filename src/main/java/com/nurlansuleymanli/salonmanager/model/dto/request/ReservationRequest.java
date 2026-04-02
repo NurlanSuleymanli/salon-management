@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -17,7 +18,7 @@ public class ReservationRequest {
     Long barberId;
 
     @NotNull
-    Long serviceId;
+    List<Long> serviceIds;
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

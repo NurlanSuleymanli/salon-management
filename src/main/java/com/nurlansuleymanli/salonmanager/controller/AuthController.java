@@ -2,6 +2,7 @@ package com.nurlansuleymanli.salonmanager.controller;
 
 
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
+import com.nurlansuleymanli.salonmanager.model.dto.request.LoginRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.RefreshTokenRequest;
 import com.nurlansuleymanli.salonmanager.service.AuthService;
 import jakarta.validation.Valid;
@@ -9,13 +10,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -29,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid UserRequest request){
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest request){
          return authService.loginUser(request);
     }
 

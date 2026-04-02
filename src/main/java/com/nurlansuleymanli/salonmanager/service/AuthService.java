@@ -5,6 +5,7 @@ import com.nurlansuleymanli.salonmanager.exception.PhoneNumberAlreadyExistExcept
 import com.nurlansuleymanli.salonmanager.exception.UserNotFoundException;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
 import com.nurlansuleymanli.salonmanager.model.dto.request.UserRequest;
+import com.nurlansuleymanli.salonmanager.model.dto.request.LoginRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.request.RefreshTokenRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.AuthResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.TokenBlacklistEntity;
@@ -85,7 +86,7 @@ public class AuthService {
     }
 
 
-    public ResponseEntity<?> loginUser(@Valid UserRequest request) {
+    public ResponseEntity<?> loginUser(@Valid LoginRequest request) {
         
         String email = request.getEmail().trim().toLowerCase();
 

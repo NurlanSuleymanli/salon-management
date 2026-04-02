@@ -57,8 +57,12 @@ public class ReservationService {
             throw new IllegalArgumentException("This barber is currently not accepting reservations!");
         }
 
-        ServiceEntity service = serviceRepository.findById(request.getServiceId())
-                .orElseThrow(() -> new ServiceNotFoundException("Service not found!"));
+        List<ServiceEntity> services = serviceRepository.findAllById(request.getServiceIds());
+        if (services.isEmpty()) {
+            throw new ServiceNotFoundException("Selected services not found!");
+        }
+
+        int totalDuration = services.stream().mapToInt(ServiceEntity::getDurationMin).sum();
 
         Instant startAt = LocalDateTime.of(request.getDate(), request.getStartTime())
                 .atZone(ZONE).toInstant();
@@ -71,7 +75,7 @@ public class ReservationService {
             throw new IllegalArgumentException("Reservations can only be made at 30-minute intervals (e.g., 10:00, 10:30)!");
         }
 
-        Instant endAt = startAt.plusSeconds(service.getDurationMin() * 60L);
+        Instant endAt = startAt.plusSeconds(totalDuration * 60L);
 
         List<ReservationEntity> conflicts = reservationRepository.findConflictingReservations(
                 barber.getId(), startAt, endAt, INACTIVE_STATUSES
@@ -84,7 +88,7 @@ public class ReservationService {
         ReservationEntity reservation = ReservationEntity.builder()
                 .customer(customer)
                 .barber(barber)
-                .service(service)
+                .services(services)
                 .salon(barber.getSalon())
                 .startAt(startAt)
                 .endAt(endAt)

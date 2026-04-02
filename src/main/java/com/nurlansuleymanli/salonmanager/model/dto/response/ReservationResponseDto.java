@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,8 +22,10 @@ public class ReservationResponseDto {
     String barberDisplayName;
     Long salonId;
     String salonName;
-    Long serviceId;
-    String serviceName;
+    List<Long> serviceIds;
+    List<String> serviceNames;
+    Integer totalDurationMin;
+    BigDecimal totalPrice;
     Instant startAt;
     Instant endAt;
     ReservationStatus status;

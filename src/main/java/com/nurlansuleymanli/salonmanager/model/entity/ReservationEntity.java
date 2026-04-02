@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,9 +39,13 @@ public class ReservationEntity {
     @JoinColumn(name = "barber_id", nullable = false)
     BarberEntity barber;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "service_id", nullable = false)
-    ServiceEntity service;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "reservation_services",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    List<ServiceEntity> services;
 
     @Column(name = "start_at", nullable = false)
     Instant startAt;

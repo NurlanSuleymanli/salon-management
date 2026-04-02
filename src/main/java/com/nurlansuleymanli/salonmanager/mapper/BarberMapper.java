@@ -5,7 +5,7 @@ import com.nurlansuleymanli.salonmanager.model.entity.BarberEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {ServiceMapper.class})
+@Mapper(componentModel = "spring")
 public interface BarberMapper {
 
     @Mapping(target = "userId", source = "user.id")

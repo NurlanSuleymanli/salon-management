@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalonSpace - Ağıllı İdarəetmə</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff', // very light purple/white
+                            100: '#ede9fe',
+                            500: '#8b5cf6', // primary purple
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        },
+                        blueish: {
+                            50: '#eff6ff',
+                            500: '#3b82f6', // primary blue
+                            600: '#2563eb',
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="antialiased min-h-screen flex flex-col font-sans transition-colors duration-500 ease-in-out bg-slate-50 text-slate-800">
+
+    <!-- Global Loader Overlay -->
+    <div id="global-loader" class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] hidden items-center justify-center">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-5 right-5 z-[100] transform transition-all duration-300 translate-x-full opacity-0 max-w-sm w-full bg-white shadow-2xl rounded-2xl p-4 border-l-4 border-brand-500 flex items-start gap-4">
+        <div id="toast-icon" class="text-brand-500 text-xl mt-0.5"><i class="fa-solid fa-bell"></i></div>
+        <div>
+            <h4 id="toast-title" class="font-bold text-slate-900">Bildiriş</h4>
+            <p id="toast-message" class="text-sm text-slate-500 mt-1">Sistem mesaji burada olacaq</p>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main id="app-container" class="flex-grow flex flex-col relative w-full h-full min-h-screen">
+
+        <!-- ============================================== -->
+        <!-- SHARED NAVBAR (Visible after Login)            -->
+        <!-- ============================================== -->
+        <nav id="shared-navbar" class="hidden glass-nav sticky top-0 z-40 w-full border-b border-slate-200 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16 md:h-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-tr from-brand-600 to-blueish-600 rounded-xl flex items-center justify-center text-white text-lg">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <span class="font-bold text-xl text-slate-900 tracking-tight hidden sm:block">Salon<span class="text-brand-600">Space</span></span>
+                    </div>
+                    
+                    <div id="nav-role-badge" class="px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wider uppercase bg-brand-50 text-brand-700 border border-brand-100 hidden md:block">
+                        Rol: Yüklənir...
+                    </div>
+
+                    <div class="relative group cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="text-right hidden md:block">
+                                <div id="nav-username" class="text-sm font-bold text-slate-900">İstifadəçi Adı</div>
+                                <div id="nav-useremail" class="text-xs font-medium text-slate-500">email@example.com</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-brand-50 border-2 border-white shadow flex items-center justify-center text-brand-600 text-lg">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                        </div>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-right">
+                            <a href="#" class="block px-4 py-2 text-sm text-slate-700 font-medium hover:bg-slate-50 hover:text-brand-600"><i class="fa-solid fa-gear w-5 opacity-70"></i> Tənzimləmələr</a>
+                            <div class="h-px bg-slate-100 my-2"></div>
+                            <a href="#" onclick="logout()" class="block px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50"><i class="fa-solid fa-arrow-right-from-bracket w-5 opacity-70"></i> Çıxış et</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ============================================== -->
+        <!-- 1. AUTHENTICATION VIEW (Login & Register)      -->
+        <!-- ============================================== -->
+        <section id="view-auth" class="app-view active flex-grow flex items-center justify-center relative overflow-hidden">
+            <!-- Animated Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-blueish-50 z-0"></div>
+            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blueish-500/10 rounded-full blur-3xl blob-anim"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-500/10 rounded-full blur-3xl blob-anim" style="animation-delay: 2s;"></div>
+
+            <div class="relative z-10 w-full max-w-md px-4 py-12">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-brand-500 to-blueish-500 rounded-2xl shadow-xl shadow-brand-500/30 flex items-center justify-center text-white text-3xl mx-auto mb-4 transform rotate-3 hover:rotate-6 transition-transform">
+                        <i class="fa-solid fa-scissors"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">SalonSpace</h1>
+                    <p class="text-slate-500 mt-2 font-medium">Sistemə daxil olun və ya qeydiyyatdan keçin</p>
+                </div>
+
+                <!-- Glass Card -->
+                <div class="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-2xl shadow-slate-200/50 border border-white">
+                    
+                    <!-- Auth Switch Toggle -->
+                    <div class="flex p-1 bg-slate-100/80 rounded-2xl mb-8 relative">
+                        <div id="auth-switcher-bg" class="absolute w-1/2 h-full top-0 left-0 bg-white rounded-xl shadow-sm border border-slate-200/50 transition-transform duration-300 ease-in-out"></div>
+                        <button onclick="toggleAuthMode('login')" class="flex-1 py-2.5 text-sm font-bold z-10 text-brand-600 transition-colors" id="btn-mode-login">Daxil ol</button>
+                        <button onclick="toggleAuthMode('register')" class="flex-1 py-2.5 text-sm font-bold z-10 text-slate-500 transition-colors" id="btn-mode-register">Qeydiyyat</button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="form-login" class="space-y-5" onsubmit="handleLogin(event)">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5 ml-1">Email Ünvanı</label>
+                            <div class="relative">
+                                <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="email" id="login-email" required class="w-full pl-11 pr-4 py-3.5 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder-slate-400 font-medium" placeholder="nurlan@example.com">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5 ml-1">
+                                <label class="block text-sm font-semibold text-slate-700">Şifrə</label>
+                                <a href="#" class="text-xs font-bold text-brand-500 hover:text-brand-600">Şifrəni unutmusan?</a>
+                            </div>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="password" id="login-password" required class="w-full pl-11 pr-4 py-3.5 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all placeholder-slate-400 font-medium" placeholder="••••••••">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-brand-600 to-blueish-600 hover:from-brand-700 hover:to-blueish-700 text-white rounded-xl font-bold text-base shadow-lg shadow-brand-500/30 transform transition-all active:scale-[0.98]">
+                            Hesaba Giriş <i class="fa-solid fa-arrow-right ml-2 opacity-80"></i>
+                        </button>
+                    </form>
+
+                    <!-- REGISTER FORM -->
+                    <form id="form-register" class="space-y-4 hidden" onsubmit="handleRegister(event)">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">Ad</label>
+                                <input type="text" id="reg-firstname" required class="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all text-sm font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">Soyad</label>
+                                <input type="text" id="reg-lastname" required class="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all text-sm font-medium">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">Email</label>
+                            <input type="email" id="reg-email" required class="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all text-sm font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">Telefon</label>
+                            <input type="tel" id="reg-phone" required class="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all text-sm font-medium" placeholder="+994xxxxxxxxx">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1 ml-1 uppercase tracking-wider">Şifrə</label>
+                            <input type="password" id="reg-password" required class="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all text-sm font-medium">
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-base shadow-lg transform transition-all active:scale-[0.98] mt-2">
+                            Hesab Yarat
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 2. USER PANEL (Client view)                    -->
+        <!-- ============================================== -->
+        <section id="view-user" class="app-view hidden flex-grow bg-slate-50">
+            <!-- User Hero -->
+            <div class="bg-white border-b border-slate-200">
+                <div class="max-w-7xl mx-auto px-4 py-10 text-center">
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Özünə mükəmməl xidmət kəşf et.</h2>
+                    <div class="max-w-3xl mx-auto flex flex-col md:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="user-search-input" class="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-700 font-medium shadow-sm" placeholder="Salon və ya xidmət axtar...">
+                        </div>
+                        <button onclick="userLoadSalons()" class="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition-transform active:scale-95 whitespace-nowrap">
+                            Axtar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="user-explore-view" class="max-w-7xl mx-auto px-4 py-12">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-2xl font-bold text-slate-900">Xidmət Mərkəzləri (Salonlar)</h3>
+                    <div class="flex gap-2">
+                        <button class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-200 shadow-sm transition"><i class="fa-solid fa-filter"></i></button>
+                    </div>
+                </div>
+                
+                <div id="user-salons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+
+            <!-- Salon Details & Barbers -->
+            <div id="user-salon-details-view" class="hidden max-w-7xl mx-auto px-4 py-8">
+                <div class="flex items-center gap-4 mb-8">
+                    <button onclick="backToSalons()" class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-200 shadow-sm transition"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div>
+                        <h2 id="salon-detail-name" class="text-3xl font-extrabold text-slate-900">Salon</h2>
+                        <p class="text-slate-500 font-medium mt-1">Özünüzə uyğun bərbəri seçin</p>
+                    </div>
+                </div>
+
+                <div id="salon-barbers-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- JS Loaded -->
+                </div>
+
+                <!-- Barber Services Section -->
+                <div id="barber-services-section" class="hidden mt-12 bg-white p-8 rounded-3xl border border-slate-200 shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-brand-100 to-transparent flex items-start justify-end p-4 rounded-bl-full text-brand-300 text-5xl"><i class="fa-solid fa-scissors opacity-50 relative top-2 right-2"></i></div>
+                    <h3 id="selected-barber-name" class="text-2xl font-bold text-slate-900 mb-6 relative z-10">Bərbər Xidmətləri</h3>
+                    <div id="barber-services-list" class="space-y-4 relative z-10">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 3. BARBER PANEL                                -->
+        <!-- ============================================== -->
+        <section id="view-barber" class="app-view hidden flex-grow bg-slate-50">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="p-3 bg-blueish-100 text-blueish-600 rounded-xl text-2xl"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">Bərbər İdarə Paneli</h2>
+                        <p class="text-slate-500 font-medium mt-1">Gündəlik qrafikiniz və görüşləriniz</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Sidebar Dashboard -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm text-center">
+                            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-brand-100 to-blueish-100 flex items-center justify-center text-4xl text-brand-600 mb-4 border-4 border-white shadow-md">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                            <h3 id="barber-panel-name" class="font-bold text-xl text-slate-900">Bərbər Adı Yüklənir</h3>
+                            <p id="barber-panel-salon" class="text-slate-500 font-medium text-sm mt-1">Salon Yüklənir...</p>
+                            <div class="mt-6 pt-6 border-t border-slate-100 flex justify-center gap-6">
+                                <div>
+                                    <div class="text-2xl font-extrabold text-slate-900" id="barber-stat-today">0</div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Bu gün</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-extrabold text-brand-600" id="barber-stat-total">0</div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Cəmi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Schedule Info -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                                <h3 class="font-bold text-lg text-slate-900">Gələcək Sifarişlərim (Rezervasiyalar)</h3>
+                                <button onclick="barberLoadReservations()" class="text-sm font-bold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 px-4 py-2 rounded-xl transition"><i class="fa-solid fa-rotate-right mr-1"></i> Yenilə</button>
+                            </div>
+                            <!-- Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left" id="barber-reservations-table">
+                                    <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                                        <tr>
+                                            <th class="p-4">Tarix / Saat</th>
+                                            <th class="p-4">Müştəri</th>
+                                            <th class="p-4">Xidmət</th>
+                                            <th class="p-4">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="barber-reservations-tbody" class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                        <!-- Loaded by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="barber-res-empty" class="hidden p-10 text-center text-slate-400 font-medium">
+                                <i class="fa-solid fa-mug-hot text-4xl mb-3 text-slate-200"></i><br>
+                                Hazırda heç bir aktiv sifarişiniz yoxdur.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 4. ADMIN PANEL                                 -->
+        <!-- ============================================== -->
+        <section id="view-admin" class="app-view hidden flex-grow bg-slate-50 flex flex-col md:flex-row">
+            <!-- Sidebar -->
+            <div class="w-full md:w-64 bg-slate-900 text-slate-300 md:min-h-[calc(100vh-80px)] p-6">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 ml-2">Admin Menyu</div>
+                <nav class="space-y-1.5">
+                    <a href="#" onclick="adminSwitchTab('dashboard')" class="admin-tab-link active flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-500 text-white font-semibold transition" data-tab="dashboard"><i class="fa-solid fa-chart-line w-5"></i> İcmal</a>
+                    <a href="#" onclick="adminSwitchTab('salons')" class="admin-tab-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-medium transition" data-tab="salons"><i class="fa-solid fa-building w-5"></i> Salonlar</a>
+                    <a href="#" onclick="adminSwitchTab('barbers')" class="admin-tab-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white font-medium transition" data-tab="barbers"><i class="fa-solid fa-users w-5"></i> Bərbərlər</a>
+                </nav>
+            </div>
+            
+            <!-- Admin Content -->
+            <div class="flex-grow p-4 md:p-8">
+                <!-- Dashboard Tab -->
+                <div id="admin-tab-dashboard" class="admin-tab-content active">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mb-8">Sistem İcmalı</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                            <div class="absolute right-[-10px] top-[-10px] text-7xl text-blueish-50 opacity-50 transform rotate-12 transition-transform group-hover:rotate-0"><i class="fa-solid fa-building"></i></div>
+                            <div class="relative z-10">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Qeydiyyatlı Salon</div>
+                                <div class="text-4xl font-extrabold text-blueish-600" id="admin-stat-salons">0</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                            <div class="absolute right-[-10px] top-[-10px] text-7xl text-brand-50 opacity-50 transform rotate-12 transition-transform group-hover:rotate-0"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="relative z-10">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Aktiv Bərbərlər</div>
+                                <div class="text-4xl font-extrabold text-brand-600" id="admin-stat-barbers">0</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                            <div class="absolute right-[-10px] top-[-10px] text-7xl text-emerald-50 opacity-50 transform rotate-12 transition-transform group-hover:rotate-0"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="relative z-10">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Xidmətlər (Sistem)</div>
+                                <div class="text-4xl font-extrabold text-emerald-500" id="admin-stat-services">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salons Tab -->
+                <div id="admin-tab-salons" class="admin-tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-extrabold text-slate-900">Salon İdarəetməsi</h2>
+                        <button class="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-800 transition shadow-md"><i class="fa-solid fa-plus mr-2"></i>Yeni Salon</button>
+                    </div>
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">Salon Adı</th>
+                                    <th class="p-4">Ünvan</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Əməliyyat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-salons-tbody" class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                <!-- loaded via js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Barbers Tab -->
+                <div id="admin-tab-barbers" class="admin-tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-extrabold text-slate-900">Bərbər İdarəetməsi</h2>
+                        <button class="bg-brand-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-brand-700 transition shadow-md"><i class="fa-solid fa-plus mr-2"></i>Qeydiyyat</button>
+                    </div>
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">Bərbər</th>
+                                    <th class="p-4">Salon ID</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Rəhbərlik</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-barbers-tbody" class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                <!-- loaded via js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div id="reservation-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeReservationModal()"></div>
+            <div class="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl p-8 animate-scale-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-slate-900">Görüş Vaxtını Seçin</h3>
+                    <button onclick="closeReservationModal()" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tarix</label>
+                        <input type="date" id="res-date-input" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-brand-500 font-medium" onchange="updateSlots()">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-3">Mövcud Saatlar</label>
+                        <div id="slots-grid" class="grid grid-cols-3 gap-3">
+                            <!-- Slots loaded by JS -->
+                        </div>
+                    </div>
+                    
+                    <button id="btn-confirm-booking" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-brand-600 transition shadow-xl disabled:opacity-50" disabled onclick="finalizeReservation()">
+                        Təsdiqlə və Bitir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

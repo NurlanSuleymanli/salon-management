@@ -2,8 +2,12 @@ package com.nurlansuleymanli.salonmanager.mapper;
 
 import com.nurlansuleymanli.salonmanager.model.dto.response.ReservationResponseDto;
 import com.nurlansuleymanli.salonmanager.model.entity.ReservationEntity;
+import com.nurlansuleymanli.salonmanager.model.entity.ServiceEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
@@ -14,8 +18,6 @@ public interface ReservationMapper {
     @Mapping(target = "barberDisplayName", source = "barber.displayName")
     @Mapping(target = "salonId", source = "salon.id")
     @Mapping(target = "salonName", source = "salon.name")
-    @Mapping(target = "serviceId", source = "service.id")
-    @Mapping(target = "serviceName", source = "service.name")
     ReservationResponseDto toReservationResponseDto(ReservationEntity entity);
 
 }
