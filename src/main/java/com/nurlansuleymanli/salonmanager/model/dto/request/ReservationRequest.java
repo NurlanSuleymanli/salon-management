@@ -1,5 +1,6 @@
 package com.nurlansuleymanli.salonmanager.model.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class ReservationRequest {
     @NotNull
     Long barberId;
 
-    @NotNull
+    @NotEmpty
     List<Long> serviceIds;
 
     @NotNull

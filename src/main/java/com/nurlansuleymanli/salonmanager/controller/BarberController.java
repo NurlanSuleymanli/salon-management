@@ -3,6 +3,7 @@ package com.nurlansuleymanli.salonmanager.controller;
 import com.nurlansuleymanli.salonmanager.model.dto.request.BarberRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.BarberResponseDto;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
+import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.service.BarberService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -79,5 +81,16 @@ public class BarberController {
         return ResponseEntity.ok(barberService.getBarbersByServiceId(serviceId));
     }
 
+    @PutMapping("/my-services")
+    public ResponseEntity<BarberResponseDto> updateMyServices(
+            @AuthenticationPrincipal UserEntity user,
+            @RequestBody List<Long> serviceIds) {
+        return ResponseEntity.ok(barberService.updateMyServices(user, serviceIds));
+    }
 
+    @GetMapping("/me")
+    public ResponseEntity<BarberResponseDto> getMyProfile(
+            @AuthenticationPrincipal UserEntity user) {
+        return ResponseEntity.ok(barberService.getMyProfile(user));
+    }
 }

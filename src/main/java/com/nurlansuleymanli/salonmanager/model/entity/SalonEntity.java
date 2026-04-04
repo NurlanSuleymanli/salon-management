@@ -47,10 +47,6 @@ public class SalonEntity {
     String contactPhone;
 
 
-    @OneToMany(mappedBy = "salonEntity")
-    @Column(name = "salon_working_hours", nullable = false)
-    List<SalonWorkingHourEntity> salonWorkingHours = new ArrayList<>();
-
 
     @Email
     @NotBlank

@@ -11,9 +11,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-
-    private String fullName;
-    private String email;
-    private String phone;
-    private Role role;
+     Long id;
+     String fullName;
+     String email;
+     String phone;
+     Role role;
+     boolean isActive;
 }

@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,7 +26,8 @@ public class ServiceRequest {
     @NotNull
     BigDecimal price;
 
-    @NotNull
+    @NotNull(message = "Salon ID must be provided")
     Long salonId;
-    
+
+    List<Long> barberIds;
 }

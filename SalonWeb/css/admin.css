@@ -1,0 +1,141 @@
+/* ============================================
+   ADMIN.CSS — Admin Panel Specific Styles
+   ============================================ */
+
+body { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  padding: 1.8rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-logo h1 { font-size: 1.6rem; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.sidebar-logo h1 span { color: var(--violet-mid); }
+.sidebar-logo p  { font-size: .73rem; color: rgba(255,255,255,.4); margin-top: .3rem; text-transform: uppercase; letter-spacing: .1em; }
+
+.sidebar-nav   { flex: 1; padding: 1.2rem .8rem; overflow-y: auto; }
+.nav-section   { margin-bottom: 1.5rem; }
+.nav-section-label {
+  font-size: .65rem; font-weight: 700;
+  color: rgba(255,255,255,.3);
+  text-transform: uppercase; letter-spacing: .12em;
+  padding: .3rem .8rem; margin-bottom: .3rem;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .7rem .9rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .2s;
+  font-size: .88rem; font-weight: 500;
+  color: rgba(255,255,255,.55);
+  border: 1px solid transparent;
+  margin-bottom: .2rem;
+}
+.nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.85); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(37,99,235,.5), rgba(124,58,237,.5));
+  color: #fff;
+  border-color: rgba(255,255,255,.1);
+}
+.nav-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem; flex-shrink: 0;
+}
+.nav-item.active .nav-icon { background: rgba(255,255,255,.15); }
+
+.sidebar-bottom {
+  padding: 1rem;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.user-info-side {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .7rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+}
+.avatar-sm {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: .88rem; flex-shrink: 0;
+}
+.user-info-side .user-name-side { font-size: .85rem; font-weight: 600; color: #fff; }
+.user-info-side .user-role-side { font-size: .7rem; color: var(--violet-mid); }
+.btn-logout-side {
+  margin-top: .6rem;
+  width: 100%;
+  padding: .55rem;
+  background: rgba(239,68,68,.15);
+  color: var(--red);
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: 10px;
+  font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: .2s;
+  font-family: 'Inter', sans-serif;
+}
+.btn-logout-side:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+/* ── CONTENT AREA ── */
+.content { flex: 1; overflow: auto; }
+
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 1px 15px rgba(0,0,0,.05);
+}
+.topbar-title { font-size: 1.15rem; font-weight: 800; color: var(--gray-900); }
+.topbar-sub   { font-size: .8rem; color: var(--gray-400); margin-top: .1rem; }
+
+/* ── RESERVATION STATUS MODAL OPTIONS ── */
+.status-select-group { display: flex; flex-direction: column; gap: .6rem; }
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .8rem 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+.status-option:hover,
+.status-option.selected { border-color: var(--blue); background: var(--blue-light); }
+.status-option input[type="radio"] { accent-color: var(--blue); }
+.status-option-disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  background: var(--gray-50);
+  border-color: var(--gray-200) !important;
+}
+.status-option-disabled:hover { border-color: var(--gray-200) !important; background: var(--gray-50) !important; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+}

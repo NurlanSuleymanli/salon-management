@@ -34,10 +34,11 @@ public class JwtService {
         this.refreshExpiration=refreshExpiration;
     }
 
-    public String generateToken(Long userId, String email){
+    public String generateToken(Long userId, String email, String role){
         return Jwts.builder()
                 .subject(userId.toString())
                 .claim("email", email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+expiration))
                 .signWith(secretKey)

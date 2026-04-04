@@ -68,10 +68,11 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
         AuthResponse response = AuthResponse.builder()
+                .id(user.getId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .fullName(user.getFullName())
@@ -100,10 +101,11 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String jwtToken = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
         AuthResponse response = AuthResponse.builder()
+                .id(user.getId())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .fullName(user.getFullName())
@@ -129,10 +131,11 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        String newAccessToken = jwtService.generateToken(user.getId(), user.getEmail());
+        String newAccessToken = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
         AuthResponse response = AuthResponse.builder()
+                .id(user.getId())
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .fullName(user.getFullName())

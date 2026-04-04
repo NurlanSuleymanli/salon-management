@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="LuxCut — Bərbər Paneli. İş saatları, rezervasiyalar."/>
+  <title>LuxCut — Bərbər Paneli</title>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <link rel="stylesheet" href="css/barber.css"/>
+</head>
+<body>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">Lux<span>Cut</span></div>
+    <div class="header-right">
+      <div class="user-chip">
+        <div class="avatar" id="hdr-avatar">?</div>
+        <span class="user-name" id="hdr-name">...</span>
+        <span class="user-role">BARBER</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Çıxış</button>
+    </div>
+  </header>
+
+  <!-- NAV TABS -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('dashboard')">📊 İdarə Paneli</button>
+    <button class="nav-tab"       onclick="showSection('schedule')">📅 Rezervasiyalarım</button>
+    <button class="nav-tab"       onclick="showSection('hours')">⏰ İş Saatlarım</button>
+    <button class="nav-tab"       onclick="showSection('services')">💈 Xidmətlərim</button>
+    <button class="nav-tab"       onclick="showSection('profile')">👤 Profilim</button>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ── DASHBOARD ── -->
+    <div id="sec-dashboard" class="section active">
+      <div class="page-header">
+        <h2>Salam, <span id="dash-name">Bərbər</span> 👋</h2>
+        <p>Bu günün icmalı</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon si-blue">📋</div><div><div class="stat-val" id="stat-total">—</div><div class="stat-label">Cəmi Rezervasiya</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⏳</div><div><div class="stat-val" id="stat-pending">—</div><div class="stat-label">Gözləmədə</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-violet">✅</div><div><div class="stat-val" id="stat-confirmed">—</div><div class="stat-label">Təsdiqlənmiş</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">🏆</div><div><div class="stat-val" id="stat-completed">—</div><div class="stat-label">Tamamlanmış</div></div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Son Rezervasiyalar</span></div>
+        <div id="dash-recent"></div>
+      </div>
+    </div>
+
+    <!-- ── SCHEDULE ── -->
+    <div id="sec-schedule" class="section">
+      <div class="page-header"><h2>Rezervasiyalarım</h2><p>Bütün müştəri rezervasiyaları</p></div>
+      <div class="table-wrap">
+        <div id="schedule-body">
+          <div class="loading-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WORKING HOURS ── -->
+    <div id="sec-hours" class="section">
+      <div class="page-header"><h2>İş Saatlarım</h2><p>Hər gün üçün iş cədvəlinizi qurun</p></div>
+      <div id="wh-grid" class="wh-grid">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+      <button class="add-wh-btn" onclick="openWhModal(null)">➕ Yeni İş Saatı Əlavə Et</button>
+    </div>
+
+    <!-- ── MY SERVICES ── -->
+    <div id="sec-services" class="section">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h2>Xidmətlərim</h2>
+          <p>Öz salonunuza aid xidmətləri idarə edin</p>
+        </div>
+        <button class="add-wh-btn" style="width:auto;margin-top:0;" onclick="openSvcModal(null)">➕ Xidmət Əlavə Et</button>
+      </div>
+      <div id="my-svc-grid" class="my-svc-grid">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div id="sec-profile" class="section">
+      <div class="page-header"><h2>Profilim</h2></div>
+      <div class="profile-card">
+        <div class="profile-top">
+          <div class="profile-avatar-lg" id="prof-avatar">?</div>
+          <div>
+            <h3 id="prof-name" style="font-size:1.2rem;font-weight:800;">...</h3>
+            <p id="prof-email" style="color:var(--gray-400);font-size:.88rem;margin-top:.2rem;"></p>
+            <span class="profile-role-badge">✂️ Bərbər</span>
+          </div>
+        </div>
+        <p class="section-subtitle">Məlumatları Yenilə</p>
+        <div class="form-group"><label for="upd-name">Ad Soyad</label><input type="text" id="upd-name"/></div>
+        <div class="form-group"><label for="upd-phone">Telefon</label><input type="text" id="upd-phone"/></div>
+        <button class="btn-save" onclick="updateProfile()">Yadda saxla</button>
+
+        <p class="section-subtitle" style="margin-top:2.5rem;">🔒 Şifrə Dəyişikliyi</p>
+        <div class="form-group"><label for="old-pass">Köhnə şifrə</label><input type="password" id="old-pass"/></div>
+        <div class="form-group"><label for="new-pass">Yeni şifrə</label><input type="password" id="new-pass"/></div>
+        <div class="form-group"><label for="new-pass2">Yeni şifrəni təkrar</label><input type="password" id="new-pass2"/></div>
+        <button class="btn-save" onclick="changePassword()">Şifrəni Dəyişdir</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── SERVICE MODAL ── -->
+  <div id="svc-modal" class="modal-bg hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="svc-modal-title">Xidmət Əlavə Et</h3>
+        <button class="modal-close" onclick="closeSvcModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label for="svc-name">Xidmət adı</label>
+        <input type="text" id="svc-name" placeholder="məs: Saç kəsimi"/>
+      </div>
+      <div class="form-group">
+        <label for="svc-duration">Müddət (dəqiqə)</label>
+        <input type="number" id="svc-duration" min="5" step="5" placeholder="30"/>
+      </div>
+      <div class="form-group">
+        <label for="svc-price">Qiymət (₼)</label>
+        <input type="number" id="svc-price" min="0" step="0.50" placeholder="10.00"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeSvcModal()">Ləğv et</button>
+        <button class="btn-modal-save" onclick="saveSvc()">Yadda saxla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WORKING HOURS MODAL ── -->
+  <div id="wh-modal" class="modal-bg hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="wh-modal-title">İş Saatı Əlavə Et</h3>
+        <button class="modal-close" onclick="closeWhModal()">✕</button>
+      </div>
+      <div class="form-group">
+        <label for="wh-day">Gün</label>
+        <select id="wh-day">
+          <option value="MONDAY">Bazar ertəsi</option>
+          <option value="TUESDAY">Çərşənbə axşamı</option>
+          <option value="WEDNESDAY">Çərşənbə</option>
+          <option value="THURSDAY">Cümə axşamı</option>
+          <option value="FRIDAY">Cümə</option>
+          <option value="SATURDAY">Şənbə</option>
+          <option value="SUNDAY">Bazar</option>
+        </select>
+      </div>
+      <div class="form-group"><label for="wh-start">Başlanğıc vaxtı</label><input type="time" id="wh-start" value="09:00"/></div>
+      <div class="form-group"><label for="wh-end">Bitmə vaxtı</label><input type="time" id="wh-end" value="18:00"/></div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeWhModal()">Ləğv et</button>
+        <button class="btn-modal-save"   onclick="saveWorkingHour()">Yadda saxla</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/barber.js"></script>
+</body>
+</html>

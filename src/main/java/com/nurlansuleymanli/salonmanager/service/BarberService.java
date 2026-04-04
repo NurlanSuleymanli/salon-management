@@ -217,4 +217,27 @@ public class BarberService {
                 .map(barberMapper::toBarberResponseDto)
                 .toList();
     }
+
+    public BarberResponseDto updateMyServices(UserEntity user, List<Long> serviceIds) {
+        BarberEntity barber = barberRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new BarberNotFoundException("You don't have a barber profile!"));
+
+        List<ServiceEntity> services = serviceRepository.findAllById(serviceIds != null ? serviceIds : List.of());
+        for (ServiceEntity s : services) {
+            if (!s.getSalon().getId().equals(barber.getSalon().getId())) {
+                throw new IllegalArgumentException("Service " + s.getName() + " does not belong to your salon!");
+            }
+        }
+
+        barber.setServices(services);
+        barberRepository.save(barber);
+
+        return barberMapper.toBarberResponseDto(barber);
+    }
+
+    public BarberResponseDto getMyProfile(UserEntity user) {
+        BarberEntity barber = barberRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new BarberNotFoundException("You don't have a barber profile!"));
+        return barberMapper.toBarberResponseDto(barber);
+    }
 }

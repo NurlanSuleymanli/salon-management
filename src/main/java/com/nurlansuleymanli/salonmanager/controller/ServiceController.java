@@ -4,6 +4,7 @@ package com.nurlansuleymanli.salonmanager.controller;
 import com.nurlansuleymanli.salonmanager.model.dto.request.ServiceRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceResponseDto;
 import com.nurlansuleymanli.salonmanager.model.dto.response.ServiceWithBarbersResponseDto;
+import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.service.ServicesService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -12,10 +13,12 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/services")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -35,14 +38,18 @@ public class ServiceController {
         return ResponseEntity.ok(servicesService.getServicesWithBarbersBySalonId(salonId));
     }
 
+    @GetMapping("/barber/my-services")
+    public ResponseEntity<List<ServiceResponseDto>> getMyBarberServices(
+            @AuthenticationPrincipal UserEntity user) {
+        return ResponseEntity.ok(servicesService.getServicesByBarberSalon(user));
+    }
 
     @PostMapping("/add")
-    public ResponseEntity<?> createService(@RequestBody @Valid ServiceRequest request){
-
-        ServiceResponseDto response = servicesService.createService(request);
-
+    public ResponseEntity<?> createService(
+            @RequestBody @Valid ServiceRequest request,
+            @AuthenticationPrincipal UserEntity user) {
+        ServiceResponseDto response = servicesService.createService(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
 
 

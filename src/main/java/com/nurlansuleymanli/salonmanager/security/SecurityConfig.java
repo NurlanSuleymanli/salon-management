@@ -57,16 +57,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/salons/{id}/update").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/salons/{id}/delete").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "/api/services/add").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}/update").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}/delete").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/services/add").hasAnyRole("ADMIN", "BARBER")
+                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}/update").hasAnyRole("ADMIN", "BARBER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}/delete").hasAnyRole("ADMIN", "BARBER")
                         
                         .requestMatchers(HttpMethod.POST, "/api/barbers/add").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/barbers/{id}/update").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/barbers/{id}/delete").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/barbers/{id}/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/barbers/my-services").hasRole("BARBER")
 
                         .requestMatchers(HttpMethod.GET, "/api/working-hours/barber/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/salons/list", "/api/salons/{id}", "/api/salons/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/services/list", "/api/services/{id}", "/api/services/salon/{salonId}/with-barbers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/services/barber/my-services").hasRole("BARBER")
+                        .requestMatchers(HttpMethod.GET, "/api/barbers/list", "/api/barbers/{id}", "/api/barbers/salon/{salonId}", "/api/barbers/filter", "/api/barbers/{id}/services", "/api/barbers/{id}/available-slots").permitAll()
                         .requestMatchers("/api/working-hours/**").hasRole("BARBER")
 
                         .requestMatchers(HttpMethod.GET, "/api/reservations/all").hasRole("ADMIN")

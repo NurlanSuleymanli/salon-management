@@ -12,11 +12,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ServiceResponseDto {
 
+    Long id;
     String name;
     Integer durationMin;
     BigDecimal price;
 
     Long salonId;
     String salonName;
-
+    java.util.List<Long> barberIds;
 }

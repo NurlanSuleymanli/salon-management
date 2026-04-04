@@ -19,7 +19,6 @@ public interface SalonMapper {
 
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "salonWorkingHours", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
