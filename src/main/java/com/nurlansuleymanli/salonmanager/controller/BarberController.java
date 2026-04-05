@@ -72,8 +72,9 @@ public class BarberController {
     @GetMapping("/{id}/available-slots")
     public ResponseEntity<List<String>> getAvailableSlots(
             @PathVariable Long id, 
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(barberService.getAvailableSlots(id, date));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false, defaultValue = "30") Integer duration) {
+        return ResponseEntity.ok(barberService.getAvailableSlots(id, date, duration));
     }
 
     @GetMapping("/filter")

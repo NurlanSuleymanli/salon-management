@@ -153,7 +153,7 @@ public class BarberService {
         return barber.getServices().stream().map(serviceMapper::toServiceResponseDto).collect(Collectors.toList());
     }
 
-    public List<String> getAvailableSlots(Long barberId, LocalDate date) {
+    public List<String> getAvailableSlots(Long barberId, LocalDate date, Integer duration) {
         if (!barberRepository.existsById(barberId)) {
             throw new BarberNotFoundException("Barber not found!");
         }
@@ -174,19 +174,18 @@ public class BarberService {
         LocalTime breakStart = workingHour.getBreakStartTime();
         LocalTime breakEnd = workingHour.getBreakEndTime();
 
-        while (currentTime.plusMinutes(30).isBefore(endTime) || currentTime.plusMinutes(30).equals(endTime)) {
-            LocalTime slotEnd = currentTime.plusMinutes(30);
+        // Prevent infinite loops if duration is 0
+        if(duration == null || duration <= 0) duration = 30;
+
+        while (currentTime.plusMinutes(duration).isBefore(endTime) || currentTime.plusMinutes(duration).equals(endTime)) {
+            LocalTime slotEnd = currentTime.plusMinutes(duration);
 
             boolean isBreak = false;
             if (breakStart != null && breakEnd != null) {
-                if ((currentTime.isAfter(breakStart) || currentTime.equals(breakStart)) && currentTime.isBefore(breakEnd)) {
+                // If any part of the service duration overlaps with the break
+                if (currentTime.isBefore(breakEnd) && slotEnd.isAfter(breakStart)) {
                     isBreak = true;
                 }
-            }
-
-            if (isBreak) {
-                currentTime = currentTime.plusMinutes(30);
-                continue;
             }
 
             boolean isReserved = false;
@@ -196,16 +195,26 @@ public class BarberService {
                 LocalTime resStart = LocalDateTime.ofInstant(res.getStartAt(), zoneId).toLocalTime();
                 LocalTime resEnd = LocalDateTime.ofInstant(res.getEndAt(), zoneId).toLocalTime();
 
+                // If any part of the service duration overlaps with an existing reservation
                 if (currentTime.isBefore(resEnd) && slotEnd.isAfter(resStart)) {
                     isReserved = true;
                     break;
                 }
             }
 
-            if (!isReserved) {
-                availableSlots.add(currentTime.toString());
+            // Only add the slot if it doesn't overlap with a break or another reservation
+            if (!isBreak && !isReserved) {
+                // Also ensure it's not in the past if searching for today
+                if (date.isEqual(LocalDate.now(zoneId))) {
+                    if (currentTime.isAfter(LocalTime.now(zoneId))) {
+                        availableSlots.add(currentTime.toString());
+                    }
+                } else {
+                    availableSlots.add(currentTime.toString());
+                }
             }
 
+            // Always advance by 30 minutes to find the next possible start time
             currentTime = currentTime.plusMinutes(30);
         }
 

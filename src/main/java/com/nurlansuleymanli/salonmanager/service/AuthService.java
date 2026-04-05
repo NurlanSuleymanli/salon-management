@@ -57,12 +57,14 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
+        Role assignedRole = userRepository.count() == 0 ? Role.ADMIN : Role.CUSTOMER;
+
         UserEntity user = UserEntity.builder()
                 .fullName(request.getFullName())
                 .email(email)
                 .phone(request.getPhone())
                 .passwordHash(encodedPassword)
-                .role(Role.CUSTOMER)
+                .role(assignedRole)
                 .isActive(true)
                 .build();
 

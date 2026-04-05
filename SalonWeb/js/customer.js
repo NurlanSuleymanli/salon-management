@@ -252,7 +252,8 @@ async function loadSlots() {
   sc.innerHTML = '<p class="slot-loading">⏳ Boş vaxtlar yüklənir...</p>';
   try {
     // Returns List<String> e.g. ["09:00", "09:30", ...]
-    const slots = await api(`/api/barbers/${bk.barberId}/available-slots?date=${date}`, { auth: false });
+    const totalDur = bk.services.reduce((a, s) => a + s.durationMin, 0) || 30;
+    const slots = await api(`/api/barbers/${bk.barberId}/available-slots?date=${date}&duration=${totalDur}`, { auth: false });
     if (!slots.length) {
       sc.innerHTML = '<p class="slot-loading">Bu tarixdə boş vaxt yoxdur.</p>';
       return;

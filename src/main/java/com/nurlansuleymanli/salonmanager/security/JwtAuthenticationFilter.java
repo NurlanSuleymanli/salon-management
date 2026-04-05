@@ -44,7 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            jwt = authHeader.substring(7);
+            jwt = authHeader.substring(7).trim();
+
+            if (jwt.equals("null") || jwt.equals("undefined") || jwt.isEmpty()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             userEmail = jwtService.extractEmail(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -67,8 +73,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException ex) {
-            handlerExceptionResolver.resolveException(request, response, null, ex);
+        } catch (JwtException ex) {
+          handlerExceptionResolver.resolveException(request, response, null, ex);
         }
     }
 }
