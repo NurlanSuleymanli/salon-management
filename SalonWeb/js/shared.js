@@ -137,7 +137,7 @@ export async function api(path, options = {}) {
       // Refresh failed → logout
       clearSession();
       window.location.href = 'index.html';
-      throw new Error('Sessiya başa çatdı. Yenidən daxil olun.');
+      throw new Error('Sessiyanız başa çatdı. Təhlükəsizlik səbəbindən nıdan yenidən daxil olun.');
     }
   }
 
@@ -147,6 +147,18 @@ export async function api(path, options = {}) {
       const d = await res.json();
       msg = d.message || d.error || msg;
     } catch(e) {}
+    // Humanize common HTTP status codes
+    if (!msg || msg.startsWith('HTTP ')) {
+      const statusMessages = {
+        400: 'Göndərilən məlumat düzgün formatında deyil.',
+        401: 'Sessiyanız başa çatmışdır. Yenidən daxil olun.',
+        403: 'Bu əməliyyatı yerinə yetirmək üçün sizin səlahiyyətiniz yoxdur.',
+        404: 'Axtardığınız məlumat tapilmadı.',
+        409: 'Bu məlumat artıq sistemdə mövcuddur.',
+        500: 'Server xətası baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.',
+      };
+      msg = statusMessages[res.status] || msg;
+    }
     throw new Error(msg);
   }
 

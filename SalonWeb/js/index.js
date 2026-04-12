@@ -67,7 +67,7 @@ export async function doLogin() {
   hideErr();
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
-  if (!email || !password) return showErr('E-poçt və şifrəni daxil edin.');
+  if (!email || !password) return showErr('Zəhmət olmasa e-poçt ünvanı və şifrəni daxil edin.');
   setLoading('btn-login', true);
   try {
     const res = await fetch(BASE + '/auth/login', {
@@ -76,7 +76,7 @@ export async function doLogin() {
       body:    JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Giriş xətası!');
+    if (!res.ok) throw new Error(data.message || 'Giriş zamanı xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
     saveSession(data);
     navigateToHome(data);
   } catch(e) {
@@ -93,8 +93,8 @@ export async function doRegister() {
   const email    = document.getElementById('reg-email').value.trim();
   const phone    = document.getElementById('reg-phone').value.trim();
   const password = document.getElementById('reg-pass').value;
-  if (!fullName || !email || !phone || !password) return showErr('Bütün xanaları doldurun.');
-  if (password.length < 8) return showErr('Şifrə ən az 8 simvol olmalıdır.');
+  if (!fullName || !email || !phone || !password) return showErr('Bütün məlumatlar mütləqdir. Zəhmət olmasa bütün xanaları doldurun.');
+  if (password.length < 8) return showErr('Şifrəniz ən az 8 simvoldan ibarət olmalıdır.');
   setLoading('btn-register', true);
   try {
     const res = await fetch(BASE + '/auth/register', {
@@ -103,7 +103,7 @@ export async function doRegister() {
       body:    JSON.stringify({ fullName, email, phone, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Qeydiyyat xətası!');
+    if (!res.ok) throw new Error(data.message || 'Qeydiyyat zamanı xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.');
     saveSession(data);
     navigateToHome(data);
   } catch(e) {
