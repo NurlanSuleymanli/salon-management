@@ -290,10 +290,10 @@ async function createReservation() {
   const btn = document.getElementById('btn-confirm');
   btn.disabled = true; btn.textContent = '⏳ Göndərilir...';
   try {
-    if (!bk.barberId)          throw new Error('Bərbər seçilməyib!');
-    if (!bk.services.length)   throw new Error('Xidmət seçilməyib!');
-    if (!bk.date)              throw new Error('Tarix seçilməyib!');
-    if (!bk.slot)              throw new Error('Vaxt seçilməyib!');
+    if (!bk.barberId)          throw new Error('Zəhmət olmasa birinci addımda bərbər seçin.');
+    if (!bk.services.length)   throw new Error('Zəhmət olmasa ən az bir xidmət seçin.');
+    if (!bk.date)              throw new Error('Zəhmət olmasa rezervasiya tarixini seçin.');
+    if (!bk.slot)              throw new Error('Zəhmət olmasa uygun bir vaxt seçin.');
 
     // ReservationRequest: { barberId: Long, serviceIds: List<Long>, date: LocalDate, startTime: LocalTime }
     // startTime must include seconds for LocalTime deserialization → "HH:mm:00"
@@ -311,7 +311,7 @@ async function createReservation() {
       })
     });
 
-    toast('✅ Uğurlu!', 'Rezervasiyanız yaradıldı. Bərbər tərəfindən təsdiq gözləyir.');
+    toast('✅ Uğurlu!', 'Rezervasiyanız uğurla yaradıldı. Bərbər tərəfindən təsdiq gözləyir.');
     bk.services = []; // reset
     _showSection('history');
   } catch(e) {
@@ -374,7 +374,7 @@ async function loadHistory() {
 }
 
 async function cancelRes(id) {
-  if (!confirm('Bu rezervasiyanı ləğv etmək istəyirsiniz?\n(Ən az 2 saat əvvəl ləğv edilməlidir)')) return;
+  if (!confirm('Bu rezervasiyanı ləğv etmək istəyirsiniz?\n(Rezervasiya başlanmasından ən az 2 saat əvvəl ləğv edilməlidir)')) return;
   try {
     // PUT /api/reservations/{id}/cancel
     await api(`/api/reservations/${id}/cancel`, { method: 'PUT' });
@@ -394,9 +394,9 @@ async function updateProfile() {
   const u        = getUser();
   const email    = (emailEl ? emailEl.value.trim() : '') || u.email || '';
 
-  if (!fullName)  return toast('Xəta', 'Ad Soyad daxil edin.', 'error');
-  if (!phone)     return toast('Xəta', 'Telefon daxil edin.', 'error');
-  if (!email)     return toast('Xəta', 'E-poçt tapılmadı. Yenidən daxil olun.', 'error');
+  if (!fullName)  return toast('Xəbərdarlıq', 'Ad Soyad mütləqdir. Zəhmət olmasa daxil edin.', 'error');
+  if (!phone)     return toast('Xəbərdarlıq', 'Telefon nömrəsi mütləqdir. Zəhmət olmasa daxil edin.', 'error');
+  if (!email)     return toast('Xəbərdarlıq', 'E-poçt ünvanı tapilmadı. Zəhmət olmasa yenidən daxil olun.', 'error');
 
   try {
     // PUT /api/users/update
@@ -422,11 +422,11 @@ async function changePassword() {
   const newPassword = document.getElementById('new-pass').value;
   const confirm2    = document.getElementById('new-pass2').value;
 
-  if (!oldPassword || !newPassword) return toast('Xəta', 'Şifrələri daxil edin.', 'error');
-  if (newPassword !== confirm2)     return toast('Xəta', 'Yeni şifrələr uyğun gəlmir!', 'error');
-  if (newPassword.length < 6)       return toast('Xəta', 'Ən az 6 simvol.', 'error');
+  if (!oldPassword || !newPassword) return toast('Xəbərdarlıq', 'Hər iki şifrə xanasını daxil edin.', 'error');
+  if (newPassword !== confirm2)     return toast('Xəbərdarlıq', 'Yeni şifrələr bir-birinə uyğun deyil. Yenidən yoxlayın.', 'error');
+  if (newPassword.length < 6)       return toast('Xəbərdarlıq', 'Yeni şifrə ən az 6 simvoldan ibarət olmalıdır.', 'error');
   if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(newPassword))
-    return toast('Xəta', 'Şifrə ən az bir hərf və bir rəqəm içərməlidir.', 'error');
+    return toast('Xəbərdarlıq', 'Şifrə ən az bir hərf və bir rəqəm içərməlidir (məsələn: Abc123).', 'error');
 
   try {
     await api('/api/users/change-password', {

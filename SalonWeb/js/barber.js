@@ -114,10 +114,10 @@ async function saveSvc() {
   const durationMin = parseInt(document.getElementById('svc-duration').value);
   const price       = parseFloat(document.getElementById('svc-price').value);
 
-  if (!name)               return toast('Xəta', 'Xidmət adı daxil edin.', 'error');
-  if (!durationMin || durationMin < 5) return toast('Xəta', 'Müddəti düzgün daxil edin.', 'error');
-  if (isNaN(price) || price < 0)       return toast('Xəta', 'Qiyməti düzgün daxil edin.', 'error');
-  if (!barberProfile)      return toast('Xəta', 'Bərbər profili tapılmadı.', 'error');
+  if (!name)               return toast('Xəbərdarlıq', 'Xidmət adı mütləqdir. Zəhmət olmasa daxil edin.', 'error');
+  if (!durationMin || durationMin < 5) return toast('Xəbərdarlıq', 'Xidmət müddəti ən az 5 dəqiqə olmalıdır.', 'error');
+  if (isNaN(price) || price < 0)       return toast('Xəbərdarlıq', 'Düzgün xidmət qiyməti daxil edin (0 və ya daha yüksək).', 'error');
+  if (!barberProfile)      return toast('Xəta', 'Bərbər profili tapilmadi. Zəhmət olmasa yenidən daxil olun.', 'error');
 
   const body = { name, durationMin, price, salonId: barberProfile.salonId };
 
@@ -137,7 +137,7 @@ async function saveSvc() {
 }
 
 async function deleteSvc(id) {
-  if (!confirm('Bu xidməti silmək istəyirsiniz?')) return;
+  if (!confirm('Diqqət! Bu xidməti silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.')) return;
   try {
     await api(`/api/services/${id}/delete`, { method: 'DELETE' });
     toast('Uğurlu!', 'Xidmət silindi.');
@@ -291,8 +291,8 @@ async function updateProfile() {
   const phone    = document.getElementById('upd-phone').value.trim();
   const u        = getUser();
   const email    = u.email || '';
-  if (!fullName || !phone) return toast('Xəta', 'Bütün xanaları doldurun.', 'error');
-  if (!email)              return toast('Xəta', 'E-poçt tapılmadı. Yenidən daxil olun.', 'error');
+  if (!fullName || !phone) return toast('Xəbərdarlıq', 'Ad Soyad və Telefon mütləqdir. Zəhmət olmasa bütün xanaları doldurun.', 'error');
+  if (!email)              return toast('Xəta', 'E-poçt ünvanı tapilmadı. Zəhmət olmasa yenidən daxil olun.', 'error');
   try {
     await api('/api/users/update', { method: 'PUT', body: JSON.stringify({ fullName, phone, email }) });
     u.fullName = fullName; u.phone = phone;
@@ -312,11 +312,11 @@ async function changePassword() {
   const oldPassword = document.getElementById('old-pass').value;
   const newPassword = document.getElementById('new-pass').value;
   const c2          = document.getElementById('new-pass2').value;
-  if (!oldPassword || !newPassword) return toast('Xəta', 'Şifrələri daxil edin.', 'error');
-  if (newPassword !== c2)           return toast('Xəta', 'Yeni şifrələr uyğun deyil!', 'error');
-  if (newPassword.length < 6)       return toast('Xəta', 'Ən az 6 simvol.', 'error');
+  if (!oldPassword || !newPassword) return toast('Xəbərdarlıq', 'Hər iki şifrə xanasını daxil edin.', 'error');
+  if (newPassword !== c2)           return toast('Xəbərdarlıq', 'Yeni şifrələr bir-birinə uyğun deyil. Yenidən yoxlayın.', 'error');
+  if (newPassword.length < 6)       return toast('Xəbərdarlıq', 'Yeni şifrə ən az 6 simvoldan ibarət olmalıdır.', 'error');
   if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(newPassword))
-    return toast('Xəta', 'Şifrə ən az bir hərf və bir rəqəm içərməlidir.', 'error');
+    return toast('Xəbərdarlıq', 'Şifrə ən az bir hərf və bir rəqəm içərməlidir (məsələn: Abc123).', 'error');
   try {
     await api('/api/users/change-password', { method: 'PUT', body: JSON.stringify({ oldPassword, newPassword }) });
     toast('Uğurlu!', 'Şifrə dəyişdirildi.');

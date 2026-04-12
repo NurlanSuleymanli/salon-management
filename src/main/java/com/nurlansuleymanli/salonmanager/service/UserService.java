@@ -7,6 +7,7 @@ import com.nurlansuleymanli.salonmanager.model.dto.request.UpdateUserRequest;
 import com.nurlansuleymanli.salonmanager.model.dto.response.UserResponse;
 import com.nurlansuleymanli.salonmanager.model.entity.UserEntity;
 import com.nurlansuleymanli.salonmanager.model.enums.Role;
+import com.nurlansuleymanli.salonmanager.repository.BarberRepository;
 import com.nurlansuleymanli.salonmanager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -28,6 +29,7 @@ public class UserService {
 
     UserMapper userMapper;
     UserRepository userRepository;
+    BarberRepository barberRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse getMyProfile(String email){
@@ -98,12 +100,21 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-        public UserResponse makeAdmin (Long id){
+        public UserResponse makeAdmin(Long id) {
 
-            UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+            UserEntity user = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
             user.setRole(Role.ADMIN);
             userRepository.save(user);
+
+
+            barberRepository.findByUserId(id).ifPresent(barber -> {
+                if (barber.isActive()) {
+                    barber.setActive(false);
+                    barberRepository.save(barber);
+                }
+            });
 
             return userMapper.toUserResponse(user);
         }

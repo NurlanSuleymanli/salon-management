@@ -161,10 +161,10 @@ async function saveSalon() {
     contactPhone: document.getElementById('sm-contact-phone').value.trim(),
     contactEmail: document.getElementById('sm-contact-email').value.trim()
   };
-  if (!body.name)         return toast('Xəta', 'Salon adı daxil edin.', 'error');
-  if (!body.address)      return toast('Xəta', 'Ünvan daxil edin.', 'error');
-  if (!body.contactPhone) return toast('Xəta', 'Telefon daxil edin (+994501234567).', 'error');
-  if (!body.contactEmail) return toast('Xəta', 'E-poçt daxil edin.', 'error');
+  if (!body.name)         return toast('Xəbərdarlıq', 'Salon adı mütləq daxil edilməlidir.', 'error');
+  if (!body.address)      return toast('Xəbərdarlıq', 'Salonun ünvanını daxil edin.', 'error');
+  if (!body.contactPhone) return toast('Xəbərdarlıq', 'Əlaqə telefon nömrəsini daxil edin. Format: +994501234567', 'error');
+  if (!body.contactEmail) return toast('Xəbərdarlıq', 'Əlaqə e-poçt ünvanını daxil edin.', 'error');
   try {
     if (editId.salon) await api(`/api/salons/${editId.salon}/update`, { method: 'PUT',  body: JSON.stringify(body) });
     else              await api('/api/salons/create',                  { method: 'POST', body: JSON.stringify(body) });
@@ -178,7 +178,7 @@ async function saveSalon() {
 }
 
 async function deleteSalon(id) {
-  if (!confirm('Bu salonu silmək istədiyinizdən əminsiniz?')) return;
+  if (!confirm('Diqqət! Bu salonu silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz.')) return;
   try {
     await api(`/api/salons/${id}/delete`, { method: 'DELETE' });
     toast('Silindi', 'Salon silindi.');
@@ -262,9 +262,9 @@ async function saveBarber() {
     userId:      userId || null,
     serviceIds:  []
   };
-  if (!body.displayName) return toast('Xəta', 'Ekran adı daxil edin.', 'error');
-  if (!body.salonId)     return toast('Xəta', 'Salon seçin.', 'error');
-  if (!editId.barber && !body.userId) return toast('Xəta', 'İstifadəçi ID daxil edin (Bərbər hesabının ID-si).', 'error');
+  if (!body.displayName) return toast('Xəbərdarlıq', 'Bərbər üçün ekran adı mütləq daxil edilməlidir.', 'error');
+  if (!body.salonId)     return toast('Xəbərdarlıq', 'Zəhmət olmasa siyahıdan salon seçin.', 'error');
+  if (!editId.barber && !body.userId) return toast('Xəbərdarlıq', 'Bərbər hesabının istifadəçi ID-sini daxil edin.', 'error');
   try {
     if (editId.barber) await api(`/api/barbers/${editId.barber}/update`, { method: 'PUT',  body: JSON.stringify(body) });
     else               await api('/api/barbers/add',                      { method: 'POST', body: JSON.stringify(body) });
@@ -287,7 +287,7 @@ async function toggleBarberStatus(id) {
 }
 
 async function deleteBarber(id) {
-  if (!confirm('Bərbəri silmək istədiyinizə əminsiniz?')) return;
+  if (!confirm('Diqqət! Bu bərbəri silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz.')) return;
   try {
     await api(`/api/barbers/${id}/delete`, { method: 'DELETE' });
     toast('Silindi', 'Bərbər silindi.');
@@ -394,7 +394,7 @@ async function saveService() {
     salonId:     parseInt(document.getElementById('svc-salon').value)   || null,
     barberIds:   barberIds
   };
-  if (!body.name || !body.salonId) return toast('Xəta', 'Ad və salon seçin.', 'error');
+  if (!body.name || !body.salonId) return toast('Xəbərdarlıq', 'Xidmət adı və salon seçimi mütləqdir.', 'error');
   try {
     if (editId.service) await api(`/api/services/${editId.service}/update`, { method: 'PUT',  body: JSON.stringify(body) });
     else                await api('/api/services/add',                        { method: 'POST', body: JSON.stringify(body) });
@@ -407,7 +407,7 @@ async function saveService() {
 }
 
 async function deleteService(id) {
-  if (!confirm('Xidməti silmək istəyirsiniz?')) return;
+  if (!confirm('Diqqət! Bu xidməti silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.')) return;
   try {
     await api(`/api/services/${id}/delete`, { method: 'DELETE' });
     toast('Silindi', 'Xidmət silindi.');
@@ -500,7 +500,7 @@ async function saveResStatus() {
       method: 'PUT',
       body:   JSON.stringify({ status: resStatusVal })
     });
-    toast('Uğurlu!', `Rezervasiya statusu "${STATUS_AZ[resStatusVal] || resStatusVal}" olaraq yeniləndi.`);
+    toast('Uğurlu!', `Rezervasiyanın statusu «${STATUS_AZ[resStatusVal] || resStatusVal}» olaraq uğurla yeniləndi.`);
     closeModal('res-status-modal');
     resStatusId  = null;
     resStatusVal = null;
@@ -508,7 +508,7 @@ async function saveResStatus() {
     // Dashboard-da da yeniləmək lazımdır
     loadDashboard();
   } catch(e) {
-    toast('Xəta', e.message || 'Status dəyişdirilə bilmədi.', 'error');
+    toast('Xəta', e.message || 'Rezervasiyanın statusunu dəyişdirmək mümkün olmadı. Zəhmət olmasa yenidən cəhd edin.', 'error');
   }
 }
 
@@ -557,7 +557,7 @@ async function toggleUserStatus(id) {
 }
 
 async function makeAdmin(id) {
-  if (!confirm('Bu istifadəçini admin etmək istəyirsiniz?')) return;
+  if (!confirm('Bu istifadəçini administrator etmək istəyirsiniz? Bunu etməzdən əvvəl əmin olun.')) return;
   try {
     await api(`/api/users/${id}/make-admin`, { method: 'PUT' });
     toast('Uğurlu!', 'İstifadəçi admin edildi.');
