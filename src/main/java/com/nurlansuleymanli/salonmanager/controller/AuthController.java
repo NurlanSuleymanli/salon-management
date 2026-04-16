@@ -10,7 +10,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -20,14 +30,31 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
      AuthService authService;
+     Map<String, Bucket> cache = new ConcurrentHashMap<>();
+
+     private Bucket resolveBucket(String ip) {
+         return cache.computeIfAbsent(ip, k -> Bucket.builder()
+                 .addLimit(Bandwidth.builder().capacity(5).refillGreedy(5, Duration.ofMinutes(1)).build())
+                 .build());
+     }
 
      @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequest request){
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequest request, HttpServletRequest httpRequest){
+        Bucket bucket = resolveBucket(httpRequest.getRemoteAddr());
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(Map.of("message", "Too many requests. Please wait 1 minute."));
+        }
         return authService.registerUser(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest request){
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest){
+        Bucket bucket = resolveBucket(httpRequest.getRemoteAddr());
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .body(Map.of("message", "Too many requests. Please wait 1 minute."));
+        }
          return authService.loginUser(request);
     }
 
