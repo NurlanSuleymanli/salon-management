@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
