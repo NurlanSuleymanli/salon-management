@@ -3,7 +3,7 @@
  * Common utilities: auth, toast, routing, API helper with auto token refresh
  */
 
-const BASE = 'http://localhost:8080';
+const BASE = 'https://salon-management-5jcn.onrender.com';
 
 // ── TOKEN & SESSION STORAGE ──────────────────────────────
 export function getToken()        { return localStorage.getItem('salon_token'); }

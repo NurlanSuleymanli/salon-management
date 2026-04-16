@@ -4,7 +4,7 @@
  */
 import { toast, routeByRole, saveTokens, getToken, isTokenExpired } from './shared.js';
 
-const BASE = 'http://localhost:8080';
+const BASE = 'https://salon-management-5jcn.onrender.com';
 
 // ── Tab switching ─────────────────────────────────────────
 export function switchTab(tab) {
