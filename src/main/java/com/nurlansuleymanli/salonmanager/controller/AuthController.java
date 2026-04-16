@@ -37,9 +37,17 @@ public class AuthController {
                  .build());
      }
 
+     private String getClientIP(HttpServletRequest request) {
+         String ipInfo = request.getHeader("X-Forwarded-For");
+         if (ipInfo == null || ipInfo.isEmpty() || "unknown".equalsIgnoreCase(ipInfo)) {
+             return request.getRemoteAddr();
+         }
+         return ipInfo.split(",")[0].trim();
+     }
+
      @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequest request, HttpServletRequest httpRequest){
-        Bucket bucket = resolveBucket(httpRequest.getRemoteAddr());
+        Bucket bucket = resolveBucket(getClientIP(httpRequest));
         if (!bucket.tryConsume(1)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(Map.of("message", "Too many requests. Please wait 1 minute."));
@@ -49,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest){
-        Bucket bucket = resolveBucket(httpRequest.getRemoteAddr());
+        Bucket bucket = resolveBucket(getClientIP(httpRequest));
         if (!bucket.tryConsume(1)) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
                     .body(Map.of("message", "Too many requests. Please wait 1 minute."));
