@@ -42,17 +42,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentials(BadCredentialsException e){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Email or password is incorrect!"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid email or password. Please try again."));
     }
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<?> handleDisabledAccount(org.springframework.security.authentication.DisabledException e){
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Your account has been blocked by the admin or has not been activated yet!"));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Your account is disabled. Please contact the administrator."));
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<?> handleExpiredToken(ExpiredJwtException e){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message" , "Access Token is expired!"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Your session has expired. Please log in again."));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -62,27 +62,27 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleTypeMismatch(Exception e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Please use only numbers in URL parameters!"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid URL parameter. Please use a valid numeric ID."));
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)
-    public ResponseEntity<?> handleServiceAlready(ServiceNotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Service not found!"));
+    public ResponseEntity<?> handleServiceNotFound(ServiceNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Service not found."));
     }
 
     @ExceptionHandler(ServiceAlreadyExistException.class)
-    public ResponseEntity<?> handleServiceAlready(ServiceAlreadyExistException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Service already exist!"));
+    public ResponseEntity<?> handleServiceAlreadyExists(ServiceAlreadyExistException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "A service with this name already exists."));
     }
 
     @ExceptionHandler(BarberNotFoundException.class)
     public ResponseEntity<?> handleBarberNotFound(BarberNotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Barber not found!"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Barber not found."));
     }
 
     @ExceptionHandler(BarberAlreadyExistException.class)
     public ResponseEntity<?> handleBarberAlreadyExist(BarberAlreadyExistException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Barber already exist!"));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "This user is already registered as a barber."));
     }
 
     @ExceptionHandler(AdminCannotBeBarberException.class)
@@ -120,8 +120,17 @@ public class GlobalExceptionHandler {
 
         log.warn("Validation Error: {}", e.getMessage());
 
+        // Collect all field errors into a single readable message
+        String details = e.getBindingResult().getFieldErrors().stream()
+                .map(fe -> "'" + fe.getField() + "': " + fe.getDefaultMessage())
+                .collect(java.util.stream.Collectors.joining("; "));
+
+        String message = (details == null || details.isBlank())
+                ? "The submitted data is invalid. Please check your input and try again."
+                : "Validation failed — " + details;
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("message", "Validation error: Data entered in incorrect format!"));
+                .body(Map.of("message", message));
     }
 
 
@@ -130,7 +139,7 @@ public class GlobalExceptionHandler {
 
         log.error("Internal Server Error: ", e);
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of( "message", "An internal system error has occurred! Please try again later."));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "An unexpected error occurred. Please try again later."));
     }
 
 }
